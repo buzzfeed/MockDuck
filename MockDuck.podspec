@@ -8,4 +8,10 @@ Pod::Spec.new do |spec|
   spec.source        = { :git => 'git@github.com:buzzfeed/MockDuck.git' }
   spec.source_files  = 'MockDuck/Sources/**/*.{h,m,swift}'
   spec.swift_version = '4.0'
+
+  spec.pod_target_xcconfig = {
+    'FRAMEWORK_SEARCH_PATHS' => '$(PLATFORM_DIR)/Developer/Library/Frameworks',
+    'ENABLE_BITCODE' => 'NO'
+  }
+
 end
