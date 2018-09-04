@@ -36,7 +36,7 @@ class MockDataTask: URLSessionDataTask {
             // The request is found. Load the MockSequence and call the completion/finish with the
             // stored data.
             completion?(sequence, true, nil)
-        } else if MockDuck.shared.shouldFallbackToNetwork {
+        } else if MockDuck.shouldFallbackToNetwork {
             // The request isn't found but we should fallback to the network. Kick off a task with
             // the internal URLSession.
             let dataTask = session.internalSession.dataTask(with: request, completionHandler: { [weak self] (data, response, error) in

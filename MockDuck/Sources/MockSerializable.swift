@@ -77,7 +77,7 @@ private extension URLRequest {
     var serializedHashValue: String {
         var normalizedURL = url
         if let url = url {
-            normalizedURL = MockDuck.shared.delegate?.normalize(url: url)
+            normalizedURL = MockDuck.delegate?.normalize(url: url)
         }
 
         var hashData = Data()
@@ -89,7 +89,7 @@ private extension URLRequest {
         if
             let body = httpBody,
             let url = url,
-            MockDuck.shared.delegate?.useBodyInRequestHash(url: url) ?? true
+            MockDuck.delegate?.useBodyInRequestHash(url: url) ?? true
         {
             hashData.append(body)
         }
@@ -122,7 +122,7 @@ extension MockSerializableData {
             if let path = normalizedURL?.path, path.count > 0 {
                 name = name.appending(path)
             }
-            if MockDuck.shared.isVerbose {
+            if MockDuck.isVerbose {
                 print("Normalized basename: \(name)")
             }
             return name
@@ -131,7 +131,7 @@ extension MockSerializableData {
 
     public var normalizedURL: URL? {
         guard let url = url else { return nil }
-        return MockDuck.shared.delegate?.normalize(url: url)
+        return MockDuck.delegate?.normalize(url: url)
     }
 
     public var dataSuffix: String? {
