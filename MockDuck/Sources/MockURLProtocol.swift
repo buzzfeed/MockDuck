@@ -21,7 +21,7 @@ public class MockURLProtocol: URLProtocol, URLSessionDelegate, URLSessionDataDel
     let session: Foundation.URLSession
 
     override init(request: URLRequest, cachedResponse: CachedURLResponse?, client: URLProtocolClient?) {
-        session = MockDuck.shared.session
+        session = MockDuck.session
         
         // Always ignore the cached response to make sure it's being sourced from the mocks
         super.init(
@@ -32,10 +32,10 @@ public class MockURLProtocol: URLProtocol, URLSessionDelegate, URLSessionDataDel
     
     override public class func canInit(with request: URLRequest) -> Bool {
         guard
-            (MockDuck.shared.enabled ||
-            MockDuck.shared.baseURL != nil ||
-            MockDuck.shared.recordURL != nil ||
-            MockDuck.shared.hasRegisteredRequestMocks())
+            (MockDuck.enabled ||
+            MockDuck.baseURL != nil ||
+            MockDuck.recordURL != nil ||
+            MockDuck.session.bundle.hasRegisteredRequestMocks())
             else { return false }
         
         // Bail out if the request has already been handled.

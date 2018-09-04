@@ -141,7 +141,7 @@ public class MockBundle {
                     try sequence.responseData?.write(to: dataOutputPath, options: [.atomic])
                 }
 
-                if MockDuck.shared.isVerbose {
+                if MockDuck.isVerbose {
                     print("[MockDuck] Persisted request at \(outputPath).")
                 }
             } else {
