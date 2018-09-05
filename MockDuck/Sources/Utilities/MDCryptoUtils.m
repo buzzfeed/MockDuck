@@ -11,14 +11,6 @@
 
 @implementation MDCryptoUtils
 
-+ (NSData *)encodeSHA256:(NSData *)data {
-    unsigned char hash[CC_SHA256_DIGEST_LENGTH];
-    if (CC_SHA256([data bytes], (unsigned int)[data length], hash)) {
-        return [NSData dataWithBytes:hash length:CC_SHA256_DIGEST_LENGTH];
-    }
-    return nil;
-}
-
 + (NSString *)md5String:(NSData *)data {
     unsigned char result[CC_MD5_DIGEST_LENGTH];
     CC_MD5(data.bytes, (CC_LONG)data.length, result);

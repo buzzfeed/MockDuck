@@ -10,23 +10,19 @@ import Foundation
 import os
 
 /**
- Consolidate the logic that decides if the data should be
- saved inline, or in a separate file.  This is complicated
- by the fact that URLRequest, URLResponse and MockSequence
- all want to share this functionality and keep a single
- implementation in one place.  This is accomplished by adding
- a 'MockSerilazableRequest' and 'MockSerializableResponse'
- that return the proper request or response focused MockSerializableData
- object.  This allows for MockSequence to implement both and be able
- to generate both request and response file names.
- 
- Also complicating matters is there is a small amount of implementation
- that needs to be the consistent across all implementations.  So, for something
- like 'requestHash', the same value is based on the request, so non-requests
- like response need to be able to return that value as well.
+ Consolidate the logic that decides if the data should be saved inline or in a separate file. This
+ is complicated by the fact that URLRequest, URLResponse and MockRequestResponse all want to share
+ this functionality. This is accomplished by adding the 'MockSerilazableRequest' and
+ 'MockSerializableResponse' protocols that return the proper request-focused or response-focused
+ MockSerializableData object. This allows for MockRequestResponse to implement both and be able to
+ generate both request and response file names.
+
+ Also complicating matters is that there is a small amount of logic that needs to be consistent
+ across all implementations.  So, for something like 'requestHash', the same value is based on the
+ request, so the response object need to be able to return that value as well.
 */
 
-public protocol MockSerializableData {
+protocol MockSerializableData {
     var headers: [String: String]? { get }
     var url: URL? { get }
     var normalizedURL: URL? { get }
@@ -34,46 +30,47 @@ public protocol MockSerializableData {
     var dataSuffix: String? { get }
 }
 
-public protocol MockSerializableRequest: HashableMockData {
+protocol MockSerializableRequest: HashableMockData {
     var serializableRequest: MockSerializableData { get }
 }
 
-public protocol MockSerializableResponse: HashableMockData {
+protocol MockSerializableResponse: HashableMockData {
     var serializableResponse: MockSerializableData { get }
 }
 
-public protocol HashableMockData {
+protocol HashableMockData {
     var requestHash: String { get }
 }
 
 extension URLRequest: HashableMockData {
-    public var requestHash: String {
+    var requestHash: String {
         return serializedHashValue
     }
 }
 
 extension URLRequest: MockSerializableRequest {
-    public var serializableRequest: MockSerializableData {
+    var serializableRequest: MockSerializableData {
         return self
     }
 }
 
-extension MockSequence: MockSerializableRequest, MockSerializableResponse {
-    public var serializableRequest: MockSerializableData {
+extension MockRequestResponse: MockSerializableRequest, MockSerializableResponse {
+    var serializableRequest: MockSerializableData {
         return request
     }
-    public var serializableResponse: MockSerializableData {
+
+    var serializableResponse: MockSerializableData {
         return response
     }
 }
 
-extension MockSequence: HashableMockData {
-    public var requestHash: String {
+extension MockRequestResponse: HashableMockData {
+    var requestHash: String {
         return request.serializedHashValue
     }
 }
 
-// This is the file name hash value that all the serialization uses.
+// This is the file name hash value that all of the serialization uses.
 private extension URLRequest {
     var serializedHashValue: String {
         let normalizedRequest = MockDuck.delegate?.normalizedRequest(for: self) ?? self
@@ -97,20 +94,20 @@ private extension URLRequest {
 }
 
 extension URLRequest: MockSerializableData {
-    public var headers: [String: String]? {
+    var headers: [String: String]? {
         return allHTTPHeaderFields
     }
 }
 
 extension URLResponse: MockSerializableData {
-    public var headers: [String: String]? {
+    var headers: [String: String]? {
         guard let httpResponse = self as? HTTPURLResponse else { return nil }
         return httpResponse.allHeaderFields as? [String: String]
     }
 }
 
 extension MockSerializableData {
-    public var baseName: String {
+    var baseName: String {
         get {
             guard var name = normalizedURL?.host else { return "request" }
             if let path = normalizedURL?.path, path.count > 0 {
@@ -120,12 +117,12 @@ extension MockSerializableData {
         }
     }
 
-    public var normalizedURL: URL? {
+    var normalizedURL: URL? {
         guard let url = url else { return nil }
         return MockDuck.delegate?.normalizedRequest(for: URLRequest(url: url)).url ?? url
     }
 
-    public var dataSuffix: String? {
+    var dataSuffix: String? {
         if
             let headers = headers,
             let contentType = headers["Content-Type"]

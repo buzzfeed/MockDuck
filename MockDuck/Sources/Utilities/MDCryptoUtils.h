@@ -8,19 +8,11 @@
 
 @import Foundation;
 
-/**
- Some common crypto utilities that would be a PITA to write in Swift. Deal with it.
- */
+/// Some common crypto utilities that are diffiult to write in Swift. We should be able to migrate
+/// this code to swift once Xcode 10 is released and CommonCryto is accessible from Swift.
 @interface MDCryptoUtils : NSObject
 
-/**
- Encode some data using SHA256.
- */
-+ (nullable NSData *)encodeSHA256:(nonnull NSData *)data;
-
-/**
- Generate an MD5 hash string for data.
- */
+/// Generate an MD5 hash string given some data.
 + (nonnull NSString *)md5String:(nonnull NSData *)data;
 
 @end

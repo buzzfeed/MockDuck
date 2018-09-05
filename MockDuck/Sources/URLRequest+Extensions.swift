@@ -54,34 +54,68 @@ extension URLRequest: Codable {
             dataSuffix == nil,
             let data = httpBody
         {
-            let encodedBody = EncodingUtils.encodeBody(data, headers: allHTTPHeaderFields)
+            let encodedBody = try EncodingUtils.encodeBody(data, headers: allHTTPHeaderFields)
             try container.encode(encodedBody, forKey: CodingKeys.httpBody)
         }
     }
 }
 
 public extension URLRequest {
-    public func mockResponse(statusCode: Int = 200, headers: [String: String]? = nil) -> MockResponse? {
+
+    /// Generate a MockResponse from this request without any response data.
+    ///
+    /// - Parameters:
+    ///   - statusCode: The status code of the mocked response. Defaults to 200.
+    ///   - headers: The HTTP headers of the mocked response.
+    /// - Returns: The mocked response
+    public func mockResponse(
+        statusCode: Int = 200,
+        headers: [String: String]? = nil)
+        throws -> MockResponse
+    {
         guard
             let url = url,
             let response = HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: nil, headerFields: headers)
-            else { return nil }
+            else { throw MockDuckError.unableToInitializeURLResponse }
+
         return MockResponse(response: response, responseData: nil)
     }
 
-    public func mockResponse(data: Data?, statusCode: Int = 200, headers: [String: String]? = nil) -> MockResponse? {
+    /// Generate a MockResponse from this request with generic response data.
+    ///
+    /// - Parameters:
+    ///   - data: The data associated with the mock response.
+    ///   - statusCode: The status code of the mocked response. Defaults to 200.
+    ///   - headers: The HTTP headers of the mocked response.
+    /// - Returns: The mocked response
+    public func mockResponse(
+        data: Data?,
+        statusCode: Int = 200,
+        headers: [String: String]? = nil)
+        throws -> MockResponse
+    {
         guard
             let url = url,
             let response = HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: nil, headerFields: headers)
-            else { return nil }
+            else { throw MockDuckError.unableToInitializeURLResponse }
+
         return MockResponse(response: response, responseData: data)
     }
 
-    public func mockResponse(json: Any?, statusCode: Int = 200, headers: [String: String]? = nil) -> MockResponse? {
-        var data: Data? = nil
-        if let responseJSON = json {
-            data = try? JSONSerialization.data(withJSONObject: responseJSON, options: [])
-        }
-        return mockResponse(data: data, statusCode: statusCode, headers: headers)
+    /// Generate a MockResponse from this request with JSON response data.
+    ///
+    /// - Parameters:
+    ///   - json: The JSON object to be returned by the resonse. Should be a valid JSON object.
+    ///   - statusCode: The status code of the mocked response. Defaults to 200.
+    ///   - headers: The HTTP headers of the mocked response.
+    /// - Returns: The mocked response
+    public func mockResponse(
+        json: Any,
+        statusCode: Int = 200,
+        headers: [String: String]? = nil)
+        throws -> MockResponse
+    {
+        let data = try JSONSerialization.data(withJSONObject: json, options: [])
+        return try mockResponse(data: data, statusCode: statusCode, headers: headers)
     }
 }

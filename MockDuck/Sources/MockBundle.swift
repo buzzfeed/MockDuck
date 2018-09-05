@@ -9,62 +9,32 @@
 import Foundation
 import os
 
-/// MockBundle holds a set of MockSequence (request/response/data pairings).  It is
-/// responsible for the persistence and loading of MockSequences
-public class MockBundle {
+/// MockBundle is responsible for loading requests from disk and optionally persisting them when
+/// `recordURL` is set.
+final class MockBundle {
 
-    public typealias RequestMock = (URLRequest) -> MockResponse?
-    private var requestMocks = [RequestMock]()
+    var baseURL: URL?
+    var recordURL: URL?
 
-    public var baseURL: URL?
-    public var recordURL: URL?
-
-    public init(baseURL: URL? = nil, recordURL: URL? = nil) {
-        self.baseURL = baseURL
-        self.recordURL = recordURL
+    init() {
     }
 
-    var recording: Bool {
-        return recordURL != nil
-    }
-
-    public func hasRegisteredRequestMocks() -> Bool {
-        return !requestMocks.isEmpty
-    }
-
-    public func registerRequestMock(with block: @escaping RequestMock) {
-        requestMocks.append(block)
-    }
-
-    public func unregisterAllRequestMocks() {
-        requestMocks.removeAll()
-    }
-
-    // MARK: Save/Load requests
-
-    func checkForRegisteredResponse(request: URLRequest) -> MockResponse? {
-        for block in requestMocks {
-            if let result = block(request) {
-                return result
-            }
-        }
-        return nil
-    }
+    // MARK: - Loading and Recording Requests
 
     /// Checks for the existence of a URLRequest in the bundle and loads it if present. If the
     /// request body or the response data are of a certain type 'jpg/png/gif/json', the request is
     /// loaded from the separate file that lives along side the recorded request.
     ///
     /// - Parameter request: URLRequest to attempt to load
-    /// - Returns: The MockSequence, if it can be loaded
-    func loadRequest(request: URLRequest) -> MockSequence? {
-        guard let fileName = MockSequence.fileName(for: .request(request)) else { return nil }
+    /// - Returns: The MockRequestResponse, if it can be loaded
+    func loadRequestResponse(for request: URLRequest) -> MockRequestResponse? {
+        guard let fileName = SerializationUtils.fileName(for: .request(request)) else { return nil }
 
         var targetURL: URL?
         var targetBaseURL: URL?
 
-        if let response = checkForRegisteredResponse(request: request) {
-            return MockSequence(request: request, mockResponse: response)
+        if let response = checkRequestHandlers(for: request) {
+            return MockRequestResponse(request: request, mockResponse: response)
         } else if
             let inputURL = baseURL?.appendingPathComponent(fileName),
             FileManager.default.fileExists(atPath: inputURL.path)
@@ -83,7 +53,7 @@ public class MockBundle {
             os_log("Request %@ not found on disk. Expected file name: %@", log: MockDuck.log, type: .debug, "\(request)", fileName)
         }
 
-        var result: MockSequence? = nil
+        var result: MockRequestResponse? = nil
         if
             let targetURL = targetURL,
             let targetBaseURL = targetBaseURL
@@ -92,18 +62,18 @@ public class MockBundle {
             do {
                 let data = try Data(contentsOf: targetURL)
 
-                var sequence: MockSequence = try decoder.decode(MockSequence.self, from: data)
+                let sequence: MockRequestResponse = try decoder.decode(MockRequestResponse.self, from: data)
 
-                // load the response data if the format is supported.
+                // Load the response data if the format is supported.
                 // This should be the same filename with a different extension.
-                if let dataFileName = MockSequence.fileName(for: .responseData(sequence, sequence)) {
+                if let dataFileName = SerializationUtils.fileName(for: .responseData(sequence, sequence)) {
                     let dataURL = targetBaseURL.appendingPathComponent(dataFileName)
                     sequence.responseData = try Data(contentsOf: dataURL)
                 }
 
-                // load the request body if the format is supported.
+                // Load the request body if the format is supported.
                 // This should be the same filename with a different extension.
-                if let bodyFileName = MockSequence.fileName(for: .requestBody(sequence)) {
+                if let bodyFileName = SerializationUtils.fileName(for: .requestBody(sequence)) {
                     let bodyURL = targetBaseURL.appendingPathComponent(bodyFileName)
                     sequence.request.httpBody = try Data(contentsOf: bodyURL)
                 }
@@ -121,11 +91,11 @@ public class MockBundle {
     /// body or the response data are of a certain type 'jpg/png/gif/json', the request is saved
     /// into a separate file that lives along side the recorded request.
     ///
-    /// - Parameter sequence: MockSequence containing the request,response & data
-    func saveRequest(sequence: MockSequence) {
+    /// - Parameter sequence: MockRequestResponse containing the request, response & data
+    func record(sequence: MockRequestResponse) {
         guard
             let recordURL = recordURL,
-            let outputFileName =  MockSequence.fileName(for: .request(sequence))
+            let outputFileName =  SerializationUtils.fileName(for: .request(sequence))
             else { return }
 
         do {
@@ -143,14 +113,14 @@ public class MockBundle {
 
                 // write out request body if the format is supported.
                 // This should be the same filename with a different extension.
-                if let requestBodyFileName = MockSequence.fileName(for: .requestBody(sequence)) {
+                if let requestBodyFileName = SerializationUtils.fileName(for: .requestBody(sequence)) {
                     let requestBodyURL = recordURL.appendingPathComponent(requestBodyFileName)
                     try sequence.request.httpBody?.write(to: requestBodyURL, options: [.atomic])
                 }
 
                 // write out response data if the format is supported.
                 // This should be the same filename with a different extension.
-                if let dataFileName = MockSequence.fileName(for: .responseData(sequence, sequence)) {
+                if let dataFileName = SerializationUtils.fileName(for: .responseData(sequence, sequence)) {
                     let dataURL = recordURL.appendingPathComponent(dataFileName)
                     try sequence.responseData?.write(to: dataURL, options: [.atomic])
                 }
@@ -164,7 +134,33 @@ public class MockBundle {
         }
     }
 
-    // Mark: Utilities
+    // MARK: - Registered Request Handlers
+
+    private var requestHandlers = [MockDuck.RequestHandler]()
+
+    func hasRegisteredRequestHandlers() -> Bool {
+        return !requestHandlers.isEmpty
+    }
+
+    func registerRequestHandler(_ handler: @escaping MockDuck.RequestHandler) {
+        requestHandlers.append(handler)
+    }
+
+    func unregisterAllRequestHandlers() {
+        requestHandlers.removeAll()
+    }
+
+    private func checkRequestHandlers(for request: URLRequest) -> MockResponse? {
+        for block in requestHandlers {
+            if let result = block(request) {
+                return result
+            }
+        }
+
+        return nil
+    }
+
+    // Mark: - Utilities
 
     private func createOutputDirectory(url outputPath: URL) throws {
         let fileManager = FileManager.default

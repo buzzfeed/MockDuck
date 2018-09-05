@@ -8,53 +8,60 @@
 
 import Foundation
 
-class MockDataTask: URLSessionDataTask {
+/// A URLSessionDataTask subclass that attempts to return a cached response from disk, when
+/// possible. When it is unable to load a response from disk, it can optionally use a fallback
+/// URLSession to handle the request normally.
+final class MockDataTask: URLSessionDataTask {
 
-    typealias TaskCompletion = (MockSequence?, Bool, NSError?) -> Void
+    typealias TaskCompletion = (MockRequestResponse?, Error?) -> Void
 
-    unowned var session: MockSession
-    let request: URLRequest
-    let completion: TaskCompletion?
+    enum ErrorType: Error {
+        case unknown
+    }
 
-    init(session: MockSession,
-         request: URLRequest,
-         completion: (TaskCompletion)? = nil)
-    {
-        self.session = session
+    private let request: URLRequest
+    private let completion: TaskCompletion
+    private var fallbackTask: URLSessionDataTask?
+
+    init(request: URLRequest, completion: @escaping TaskCompletion) {
         self.request = request
         self.completion = completion
         super.init()
     }
 
-    override func cancel() {
-        // no op
-    }
-
-    // Pretty simple, on task execution, look for a saved request, or kick off the actual request
+    // On task execution, look for a saved request or kick off the fallback request.
     override func resume() {
-        if let sequence = session.bundle.loadRequest(request: request) {
-            // The request is found. Load the MockSequence and call the completion/finish with the
-            // stored data.
-            completion?(sequence, true, nil)
+        if let sequence = MockDuck.mockBundle.loadRequestResponse(for: request) {
+            // The request is found. Load the MockRequestResponse and call the completion/finish
+            // with the stored data.
+            completion(sequence, nil)
         } else if MockDuck.shouldFallbackToNetwork {
             // The request isn't found but we should fallback to the network. Kick off a task with
-            // the internal URLSession.
-            let dataTask = session.internalSession.dataTask(with: request, completionHandler: { [weak self] (data, response, error) in
-                guard
-                    let response = response,
-                    let strongSelf = self
-                    else { return }
-                // Create a new MockSequence with all the request/response data.
-                let sequence = MockSequence(request: strongSelf.request, response: response, responseData: data)
-                // Handle errors better
-                strongSelf.completion?(sequence, false, nil)
+            // the fallback URLSession.
+            fallbackTask = MockDuck.fallbackSession.dataTask(with: request, completionHandler: { (data, response, error) in
+                if let error = error {
+                    self.completion(nil, error)
+                } else if let response = response {
+                    let sequence = MockRequestResponse(request: self.request, response: response, responseData: data)
+                    MockDuck.mockBundle.record(sequence: sequence)
+                    self.completion(sequence, nil)
+                } else {
+                    self.completion(nil, ErrorType.unknown)
+                }
+
+                self.fallbackTask = nil
             })
-            dataTask.resume()
+            fallbackTask?.resume()
         } else {
             // The request isn't found and we shouldn't fallback to the network. Return a
             // well-crafted error in the completion.
             let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet, userInfo: nil)
-            completion?(nil, false, error)
+            completion(nil, error)
         }
+    }
+
+    override func cancel() {
+        fallbackTask?.cancel()
+        fallbackTask = nil
     }
 }

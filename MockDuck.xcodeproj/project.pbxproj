@@ -9,13 +9,14 @@
 /* Begin PBXBuildFile section */
 		63AB561D20A345730033EEBD /* MDCryptoUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AB561B20A345720033EEBD /* MDCryptoUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		63AB561E20A345730033EEBD /* MDCryptoUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AB561C20A345720033EEBD /* MDCryptoUtils.m */; };
+		63C6D87921405F7600AA5700 /* SerializationUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C6D87821405F7600AA5700 /* SerializationUtils.swift */; };
 		7A4FD5C020618A250081600A /* MockDuck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4FD5BF20618A250081600A /* MockDuck.swift */; };
 		7A4FD5C4206199F90081600A /* MockDataTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4FD5C3206199F90081600A /* MockDataTask.swift */; };
 		7A65B59520603CCD0056B4BB /* MockDuckTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A65B59320603CCD0056B4BB /* MockDuckTests.swift */; };
 		7A65B5AA20603EE10056B4BB /* MockDuck.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A65B58B20603CC50056B4BB /* MockDuck.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7A65B5AC206040FA0056B4BB /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A65B5AB206040FA0056B4BB /* MockURLProtocol.swift */; };
 		7A6E2360207FAA990083952F /* EncodingUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6E235F207FAA990083952F /* EncodingUtils.swift */; };
-		7A969D44206434BE00656966 /* MockSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A969D43206434BE00656966 /* MockSequence.swift */; };
+		7A969D44206434BE00656966 /* MockRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A969D43206434BE00656966 /* MockRequestResponse.swift */; };
 		7A969D46206947F700656966 /* MockBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A969D45206947F700656966 /* MockBundle.swift */; };
 		7AA36C1220603C2700E6EF62 /* MockDuck.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7AA36C0820603C2700E6EF62 /* MockDuck.framework */; };
 		7AB01ADE2061518B00ECD0EE /* MockSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB01ADD2061518B00ECD0EE /* MockSession.swift */; };
@@ -37,6 +38,7 @@
 /* Begin PBXFileReference section */
 		63AB561B20A345720033EEBD /* MDCryptoUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDCryptoUtils.h; sourceTree = "<group>"; };
 		63AB561C20A345720033EEBD /* MDCryptoUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDCryptoUtils.m; sourceTree = "<group>"; };
+		63C6D87821405F7600AA5700 /* SerializationUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializationUtils.swift; sourceTree = "<group>"; };
 		7A4FD5BF20618A250081600A /* MockDuck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDuck.swift; sourceTree = "<group>"; };
 		7A4FD5C3206199F90081600A /* MockDataTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDataTask.swift; sourceTree = "<group>"; };
 		7A65B58920603CC50056B4BB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -45,7 +47,7 @@
 		7A65B59320603CCD0056B4BB /* MockDuckTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockDuckTests.swift; sourceTree = "<group>"; };
 		7A65B5AB206040FA0056B4BB /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
 		7A6E235F207FAA990083952F /* EncodingUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncodingUtils.swift; sourceTree = "<group>"; };
-		7A969D43206434BE00656966 /* MockSequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSequence.swift; sourceTree = "<group>"; };
+		7A969D43206434BE00656966 /* MockRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRequestResponse.swift; sourceTree = "<group>"; };
 		7A969D45206947F700656966 /* MockBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBundle.swift; sourceTree = "<group>"; };
 		7AA36C0820603C2700E6EF62 /* MockDuck.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MockDuck.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7AA36C1120603C2700E6EF62 /* MockDuckTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MockDuckTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -87,13 +89,13 @@
 			children = (
 				7A65B58B20603CC50056B4BB /* MockDuck.h */,
 				7A4FD5BF20618A250081600A /* MockDuck.swift */,
-				7A969D45206947F700656966 /* MockBundle.swift */,
 				7AB01ADD2061518B00ECD0EE /* MockSession.swift */,
+				7A969D45206947F700656966 /* MockBundle.swift */,
 				7A4FD5C3206199F90081600A /* MockDataTask.swift */,
-				7ABF6CAB2072AB9D008550CA /* MockSerializable.swift */,
-				7A969D43206434BE00656966 /* MockSequence.swift */,
-				7A65B5AB206040FA0056B4BB /* MockURLProtocol.swift */,
+				7A969D43206434BE00656966 /* MockRequestResponse.swift */,
 				7AE896B0212C7EF900CD9E2F /* MockResponse.swift */,
+				7ABF6CAB2072AB9D008550CA /* MockSerializable.swift */,
+				7A65B5AB206040FA0056B4BB /* MockURLProtocol.swift */,
 				7ABF6CA92072AB43008550CA /* URLRequest+Extensions.swift */,
 				7A6E2369207FAC380083952F /* Utilities */,
 			);
@@ -122,6 +124,7 @@
 				7A6E235F207FAA990083952F /* EncodingUtils.swift */,
 				63AB561B20A345720033EEBD /* MDCryptoUtils.h */,
 				63AB561C20A345720033EEBD /* MDCryptoUtils.m */,
+				63C6D87821405F7600AA5700 /* SerializationUtils.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -280,10 +283,11 @@
 				7A4FD5C4206199F90081600A /* MockDataTask.swift in Sources */,
 				7A65B5AC206040FA0056B4BB /* MockURLProtocol.swift in Sources */,
 				7ABF6CAA2072AB43008550CA /* URLRequest+Extensions.swift in Sources */,
+				63C6D87921405F7600AA5700 /* SerializationUtils.swift in Sources */,
 				7A6E2360207FAA990083952F /* EncodingUtils.swift in Sources */,
 				7A4FD5C020618A250081600A /* MockDuck.swift in Sources */,
 				7AE896B1212C7EF900CD9E2F /* MockResponse.swift in Sources */,
-				7A969D44206434BE00656966 /* MockSequence.swift in Sources */,
+				7A969D44206434BE00656966 /* MockRequestResponse.swift in Sources */,
 				7AB01ADE2061518B00ECD0EE /* MockSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
