@@ -93,6 +93,10 @@ public struct MockSequence: Codable {
             pathExtension = data.dataSuffix
         }
 
+        // We only construct a URL if there is a valid path extension. The only way pathExtension
+        // can be nil here is if this is a data blob that we do not support writing as an associated
+        // file. In this scenario, this data is encoded and stored in the JSON itself instead of
+        // as a separate, associated file.
         var url: URL?
         if let pathExtension = pathExtension {
             url = baseURL
