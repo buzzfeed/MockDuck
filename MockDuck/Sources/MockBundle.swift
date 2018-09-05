@@ -81,7 +81,6 @@ public class MockBundle {
             targetBaseURL = recordURL
         } else {
             os_log("Request %@ not found on disk. Expected file name: %@", log: MockDuck.log, type: .debug, "\(request)", fileName)
-            return nil
         }
 
         var result: MockSequence? = nil
