@@ -66,7 +66,7 @@ public struct MockSequence: Codable {
         case responseData(MockSerializableRequest, MockSerializableResponse)
     }
 
-    public static func fileURL(for type: MockFileTarget, baseURL: URL) -> URL? {
+    public static func fileName(for type: MockFileTarget) -> String? {
         var data: MockSerializableData
         var hashValue: String
         var componentSuffix: String = ""
@@ -93,18 +93,16 @@ public struct MockSequence: Codable {
             pathExtension = data.dataSuffix
         }
 
-        // We only construct a URL if there is a valid path extension. The only way pathExtension
-        // can be nil here is if this is a data blob that we do not support writing as an associated
-        // file. In this scenario, this data is encoded and stored in the JSON itself instead of
-        // as a separate, associated file.
-        var url: URL?
+        // We only construct a fileName if there is a valid path extension. The only way
+        // pathExtension can be nil here is if this is a data blob that we do not support writing as
+        // an associated file. In this scenario, this data is encoded and stored in the JSON itself
+        // instead of as a separate, associated file.
+        var fileName: String?
         if let pathExtension = pathExtension {
-            url = baseURL
-                .appendingPathComponent("\(baseName)-\(hashValue)\(componentSuffix)")
-                .appendingPathExtension(pathExtension)
+            fileName = "\(baseName)-\(hashValue)\(componentSuffix).\(pathExtension)"
         }
 
-        return url
+        return fileName
     }
 }
 
