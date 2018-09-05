@@ -76,22 +76,15 @@ extension MockSequence: HashableMockData {
 // This is the file name hash value that all the serialization uses.
 private extension URLRequest {
     var serializedHashValue: String {
-        var normalizedURL = url
-        if let url = url {
-            normalizedURL = MockDuck.delegate?.normalize(url: url)
-        }
+        let normalizedRequest = MockDuck.delegate?.normalizedRequest(for: self) ?? self
 
         var hashData = Data()
 
-        if let urlData = normalizedURL?.absoluteString.data(using: .utf8) {
+        if let urlData = normalizedRequest.url?.absoluteString.data(using: .utf8) {
             hashData.append(urlData)
         }
 
-        if
-            let body = httpBody,
-            let url = url,
-            MockDuck.delegate?.useBodyInRequestHash(url: url) ?? true
-        {
+        if let body = normalizedRequest.httpBody {
             hashData.append(body)
         }
 
@@ -129,7 +122,7 @@ extension MockSerializableData {
 
     public var normalizedURL: URL? {
         guard let url = url else { return nil }
-        return MockDuck.delegate?.normalize(url: url)
+        return MockDuck.delegate?.normalizedRequest(for: URLRequest(url: url)).url ?? url
     }
 
     public var dataSuffix: String? {

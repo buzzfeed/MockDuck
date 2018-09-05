@@ -9,17 +9,18 @@
 import Foundation
 import os
 
-/// A delegate protocol that can be used to modify how MockDuck functions
+/// A delegate protocol that can be used to modify how MockDuck functions.
 public protocol MockDuckDelegate: class {
 
-    /// A hook that allows one to normalize and/or modify a request before it is processed by
-    /// MockDuck. For example, this can be useful to remove query parameters that change from
-    /// one run of the app to another.
+    /// A hook that allows one to normalize a request before it is turned into a hash that uniquely
+    /// identifies it on the filesystem. By default, the entire request URL and the request body
+    /// are used to create a unique request hash. It may be useful to remove some query parameters
+    /// here or clear out the body so that multiple similar requests all hash to the same location
+    /// on disk.
     ///
     /// - Parameter request: The request to normalize
     /// - Returns: The normalized request
-    func normalize(url: URL) -> URL
-    func useBodyInRequestHash(url: URL) -> Bool
+    func normalizedRequest(for request: URLRequest) -> URLRequest
 }
 
 // MARK: -
