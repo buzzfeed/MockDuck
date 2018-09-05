@@ -58,29 +58,29 @@ public class MockBundle {
     /// - Parameter request: URLRequest to attempt to load
     /// - Returns: The MockSequence, if it can be loaded
     func loadRequest(request: URLRequest) -> MockSequence? {
+        guard let fileName = MockSequence.fileName(for: .request(request)) else { return nil }
+
         var targetURL: URL?
         var targetBaseURL: URL?
 
         if let response = checkForRegisteredResponse(request: request) {
             return MockSequence(request: request, mockResponse: response)
         } else if
-            let baseURL = baseURL,
-            let inputPath = MockSequence.fileURL(for: .request(request), baseURL: baseURL),
-            FileManager.default.fileExists(atPath: inputPath.path)
+            let inputURL = baseURL?.appendingPathComponent(fileName),
+            FileManager.default.fileExists(atPath: inputURL.path)
         {
-            os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputPath.path)
-            targetURL = inputPath
+            os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputURL.path)
+            targetURL = inputURL
             targetBaseURL = baseURL
         } else if
-            let recordURL = recordURL,
-            let inputPath = MockSequence.fileURL(for: .request(request), baseURL: recordURL),
-            FileManager.default.fileExists(atPath: inputPath.path)
+            let inputURL = recordURL?.appendingPathComponent(fileName),
+            FileManager.default.fileExists(atPath: inputURL.path)
         {
-            os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputPath.path)
-            targetURL = inputPath
+            os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputURL.path)
+            targetURL = inputURL
             targetBaseURL = recordURL
-        } else if let path = MockSequence.fileURL(for: .request(request), baseURL: URL(fileURLWithPath: "")) {
-            os_log("Request %@ not found on disk. Expected path: %@", log: MockDuck.log, type: .debug, "\(request)", path.path)
+        } else {
+            os_log("Request %@ not found on disk. Expected file name: %@", log: MockDuck.log, type: .debug, "\(request)", fileName)
             return nil
         }
 
@@ -94,16 +94,19 @@ public class MockBundle {
                 let data = try Data(contentsOf: targetURL)
 
                 var sequence: MockSequence = try decoder.decode(MockSequence.self, from: data)
+
                 // load the response data if the format is supported.
                 // This should be the same filename with a different extension.
-                if let dataPath = MockSequence.fileURL(for: .responseData(sequence, sequence), baseURL: targetBaseURL) {
-                    sequence.responseData = try Data(contentsOf: dataPath)
+                if let dataFileName = MockSequence.fileName(for: .responseData(sequence, sequence)) {
+                    let dataURL = targetBaseURL.appendingPathComponent(dataFileName)
+                    sequence.responseData = try Data(contentsOf: dataURL)
                 }
 
                 // load the request body if the format is supported.
                 // This should be the same filename with a different extension.
-                if let bodyPath = MockSequence.fileURL(for: .requestBody(sequence), baseURL: targetBaseURL) {
-                    sequence.request.httpBody = try Data(contentsOf: bodyPath)
+                if let bodyFileName = MockSequence.fileName(for: .requestBody(sequence)) {
+                    let bodyURL = targetBaseURL.appendingPathComponent(bodyFileName)
+                    sequence.request.httpBody = try Data(contentsOf: bodyURL)
                 }
 
                 result = sequence
@@ -123,11 +126,12 @@ public class MockBundle {
     func saveRequest(sequence: MockSequence) {
         guard
             let recordURL = recordURL,
-            let outputPath =  MockSequence.fileURL(for: .request(sequence), baseURL: recordURL)
+            let outputFileName =  MockSequence.fileName(for: .request(sequence))
             else { return }
 
         do {
-            try createOutputDirectory(url: outputPath)
+            let outputURL = recordURL.appendingPathComponent(outputFileName)
+            try createOutputDirectory(url: outputURL)
 
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted]
@@ -136,21 +140,23 @@ public class MockBundle {
             let result = String(data: data, encoding: .utf8)
 
             if let data = result?.data(using: .utf8) {
-                try data.write(to: outputPath, options: [.atomic])
+                try data.write(to: outputURL, options: [.atomic])
 
                 // write out request body if the format is supported.
                 // This should be the same filename with a different extension.
-                if let requestBodyPath = MockSequence.fileURL(for: .requestBody(sequence), baseURL: recordURL) {
-                    try sequence.request.httpBody?.write(to: requestBodyPath, options: [.atomic])
+                if let requestBodyFileName = MockSequence.fileName(for: .requestBody(sequence)) {
+                    let requestBodyURL = recordURL.appendingPathComponent(requestBodyFileName)
+                    try sequence.request.httpBody?.write(to: requestBodyURL, options: [.atomic])
                 }
 
                 // write out response data if the format is supported.
                 // This should be the same filename with a different extension.
-                if let dataOutputPath = MockSequence.fileURL(for: .responseData(sequence, sequence), baseURL: recordURL) {
-                    try sequence.responseData?.write(to: dataOutputPath, options: [.atomic])
+                if let dataFileName = MockSequence.fileName(for: .responseData(sequence, sequence)) {
+                    let dataURL = recordURL.appendingPathComponent(dataFileName)
+                    try sequence.responseData?.write(to: dataURL, options: [.atomic])
                 }
 
-                os_log("Persisted network request to: %@", log: MockDuck.log, type: .debug, outputPath.path)
+                os_log("Persisted network request to: %@", log: MockDuck.log, type: .debug, outputURL.path)
             } else {
                 os_log("Failed to persist request for: %@", log: MockDuck.log, type: .error, "\(sequence)")
             }
