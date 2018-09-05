@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import os
 
 /// MockBundle holds a set of MockSequence (request/response/data pairings).  It is
 /// responsible for the persistence and loading of MockSequences
@@ -100,7 +101,7 @@ public class MockBundle {
 
             result = sequence
         } catch {
-            print("[MockDuck] Error decoding JSON: \(error)")
+            os_log("Error decoding JSON: %@", log: MockDuck.log, type: .error, "\(error)")
         }
 
         return result
@@ -141,14 +142,12 @@ public class MockBundle {
                     try sequence.responseData?.write(to: dataOutputPath, options: [.atomic])
                 }
 
-                if MockDuck.isVerbose {
-                    print("[MockDuck] Persisted request at \(outputPath).")
-                }
+                os_log("Persisted network request to: %@", log: MockDuck.log, type: .debug, outputPath.path)
             } else {
-                print("[MockDuck] Failed to persist request.")
+                os_log("Failed to persist request for: %@", log: MockDuck.log, type: .error, "\(sequence)")
             }
         } catch {
-            print("[MockDuck] Failed to persist request. \(error)")
+            os_log("Failed to persist request: %@", log: MockDuck.log, type: .error, "\(error)")
         }
     }
 
