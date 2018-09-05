@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import os
 
 /// A delegate protocol that can be used to modify how MockDuck functions
 public protocol MockDuckDelegate: class {
@@ -29,7 +30,6 @@ public class MockDuck {
     static let requestQueue = DispatchQueue(label: "com.buzzfeed.MockDuck.sessionQueue", attributes: [])
 
     public static weak var delegate: MockDuckDelegate?
-    public static var isVerbose = false
 
     private static let registeredMocks = [MockSequence]()
 
@@ -61,8 +61,11 @@ public class MockDuck {
         }
         didSet {
             requestBundle.baseURL = baseURL
+
             if let baseURL = baseURL {
-                print("[MockDuck] Using bundle at: \(baseURL.path)")
+                os_log("Loading network requests from: %@", log: log, type: .info, baseURL.path)
+            } else {
+                os_log("No longer loading network requests from disk", log: log, type: .info)
             }
         }
     }
@@ -76,8 +79,11 @@ public class MockDuck {
         }
         didSet {
             requestBundle.recordURL = recordURL
+
             if let recordURL = recordURL {
-                print("[MockDuck] Using bundle at: \(recordURL.path)")
+                os_log("Recording network requests to: %@", log: log, type: .info, recordURL.path)
+            } else {
+                os_log("No longer recording network requests", log: log, type: .info)
             }
         }
     }
@@ -103,6 +109,11 @@ public class MockDuck {
     public static func unregisterAllRequestMocks() {
         requestBundle.unregisterAllRequestMocks()    
     }
+
+    // MARK: - Internal Use Only
+
+    /// MockDuck uses this to log all of its messages.
+    internal static let log = OSLog(subsystem: "com.buzzfeed.MockDuck", category: "default")
 
     // MARK: - Private Configuration
 

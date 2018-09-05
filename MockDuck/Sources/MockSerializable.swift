@@ -122,9 +122,6 @@ extension MockSerializableData {
             if let path = normalizedURL?.path, path.count > 0 {
                 name = name.appending(path)
             }
-            if MockDuck.isVerbose {
-                print("Normalized basename: \(name)")
-            }
             return name
         }
     }
