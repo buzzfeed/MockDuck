@@ -8,41 +8,18 @@
 
 import Foundation
 
-public class MockSession: URLSession {
+/// MockSession is a basic subclass of URLSession, created so that we can hook into the creation of
+/// NSURLSession tasks and provide our own tasks that can load cached requests from disk.
+final class MockSession: URLSession {
+    private let queue = DispatchQueue(label: "com.buzzfeed.MockDuck.MockSessionQueue", attributes: [])
 
-    public typealias DataTaskCompletionBlock = (Data?, Foundation.URLResponse?, Error?) -> Void
-
-    let internalSession: URLSession
-    let queue: DispatchQueue
-    let bundle: MockBundle
-
-    public init(
-        requestBundle: MockBundle,
-        requestQueue: DispatchQueue,
-        internalSession: URLSession = URLSession.shared)
-    {
-        self.internalSession = internalSession
-        self.queue = requestQueue
-        self.bundle = requestBundle
-        super.init()
-    }
-
-    // URLSession
-    public override func dataTask(
+    override func dataTask(
         with request: URLRequest,
-        completionHandler: @escaping DataTaskCompletionBlock) -> URLSessionDataTask
+        completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void)
+        -> URLSessionDataTask
     {
-        let task = MockDataTask(session: self, request: request) { [weak self] (sequence, isPlayback, error) in
-            guard let strongSelf = self else { return }
-            strongSelf.queue.async {
-                if
-                    strongSelf.bundle.recording,
-                    let sequence = sequence,
-                    !sequence.loadedFromDisk
-                {
-                    strongSelf.bundle.saveRequest(sequence: sequence)
-                }
-
+        let task = MockDataTask(request: request) { (sequence, error) in
+            self.queue.async {
                 completionHandler(sequence?.responseData, sequence?.response, error)
             }
         }
