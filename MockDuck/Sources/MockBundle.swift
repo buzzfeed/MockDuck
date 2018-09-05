@@ -58,8 +58,8 @@ public class MockBundle {
     /// - Parameter request: URLRequest to attempt to load
     /// - Returns: The MockSequence, if it can be loaded
     func loadRequest(request: URLRequest) -> MockSequence? {
-        let targetURL: URL
-        let targetBaseURL: URL
+        var targetURL: URL?
+        var targetBaseURL: URL?
 
         if let response = checkForRegisteredResponse(request: request) {
             return MockSequence(request: request, mockResponse: response)
@@ -68,6 +68,7 @@ public class MockBundle {
             let inputPath = MockSequence.fileURL(for: .request(request), baseURL: baseURL),
             FileManager.default.fileExists(atPath: inputPath.path)
         {
+            os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputPath.path)
             targetURL = inputPath
             targetBaseURL = baseURL
         } else if
@@ -75,33 +76,40 @@ public class MockBundle {
             let inputPath = MockSequence.fileURL(for: .request(request), baseURL: recordURL),
             FileManager.default.fileExists(atPath: inputPath.path)
         {
+            os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputPath.path)
             targetURL = inputPath
             targetBaseURL = recordURL
-        } else {
+        } else if let path = MockSequence.fileURL(for: .request(request), baseURL: URL(fileURLWithPath: "")) {
+            os_log("Request %@ not found on disk. Expected path: %@", log: MockDuck.log, type: .debug, "\(request)", path.path)
             return nil
         }
 
         var result: MockSequence? = nil
-        let decoder = JSONDecoder()
-        do {
-            let data = try Data(contentsOf: targetURL)
+        if
+            let targetURL = targetURL,
+            let targetBaseURL = targetBaseURL
+        {
+            let decoder = JSONDecoder()
+            do {
+                let data = try Data(contentsOf: targetURL)
 
-            var sequence: MockSequence = try decoder.decode(MockSequence.self, from: data)
-            // load the response data if the format is supported.
-            // This should be the same filename with a different extension.
-            if let dataPath = MockSequence.fileURL(for: .responseData(sequence, sequence), baseURL: targetBaseURL) {
-                sequence.responseData = try Data(contentsOf: dataPath)
+                var sequence: MockSequence = try decoder.decode(MockSequence.self, from: data)
+                // load the response data if the format is supported.
+                // This should be the same filename with a different extension.
+                if let dataPath = MockSequence.fileURL(for: .responseData(sequence, sequence), baseURL: targetBaseURL) {
+                    sequence.responseData = try Data(contentsOf: dataPath)
+                }
+
+                // load the request body if the format is supported.
+                // This should be the same filename with a different extension.
+                if let bodyPath = MockSequence.fileURL(for: .requestBody(sequence), baseURL: targetBaseURL) {
+                    sequence.request.httpBody = try Data(contentsOf: bodyPath)
+                }
+
+                result = sequence
+            } catch {
+                os_log("Error decoding JSON: %@", log: MockDuck.log, type: .error, "\(error)")
             }
-
-            // load the request body if the format is supported.
-            // This should be the same filename with a different extension.
-            if let bodyPath = MockSequence.fileURL(for: .requestBody(sequence), baseURL: targetBaseURL) {
-                sequence.request.httpBody = try Data(contentsOf: bodyPath)
-            }
-
-            result = sequence
-        } catch {
-            os_log("Error decoding JSON: %@", log: MockDuck.log, type: .error, "\(error)")
         }
 
         return result

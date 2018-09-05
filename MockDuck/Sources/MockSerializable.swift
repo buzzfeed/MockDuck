@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import os
 
 /**
  Consolidate the logic that decides if the data should be
