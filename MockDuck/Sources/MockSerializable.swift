@@ -24,6 +24,7 @@ import os
 
 protocol MockSerializableData {
     var headers: [String: String]? { get }
+    var contentType: String? { get }
     var url: URL? { get }
     var normalizedURL: URL? { get }
     var baseName: String { get }
@@ -97,12 +98,20 @@ extension URLRequest: MockSerializableData {
     var headers: [String: String]? {
         return allHTTPHeaderFields
     }
+
+    var contentType: String? {
+        return headers?["Content-Type"]
+    }
 }
 
 extension URLResponse: MockSerializableData {
     var headers: [String: String]? {
         guard let httpResponse = self as? HTTPURLResponse else { return nil }
         return httpResponse.allHeaderFields as? [String: String]
+    }
+
+    var contentType: String? {
+        return headers?["Content-Type"] ?? mimeType
     }
 }
 
@@ -123,20 +132,18 @@ extension MockSerializableData {
     }
 
     var dataSuffix: String? {
-        if
-            let headers = headers,
-            let contentType = headers["Content-Type"]
-        {
-            if contentType.contains("image/jpeg") {
-                return "jpg"
-            } else if contentType.contains("image/png") {
-                return "png"
-            } else if contentType.contains("image/gif") {
-                return "gif"
-            } else if contentType.contains("application/json") {
-                return "json"
-            }
+        guard let contentType = contentType else { return nil }
+
+        if contentType.contains("image/jpeg") {
+            return "jpg"
+        } else if contentType.contains("image/png") {
+            return "png"
+        } else if contentType.contains("image/gif") {
+            return "gif"
+        } else if contentType.contains("application/json") {
+            return "json"
+        } else {
+            return nil
         }
-        return nil
     }
 }
