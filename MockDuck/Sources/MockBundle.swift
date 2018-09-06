@@ -91,11 +91,11 @@ final class MockBundle {
     /// body or the response data are of a certain type 'jpg/png/gif/json', the request is saved
     /// into a separate file that lives along side the recorded request.
     ///
-    /// - Parameter sequence: MockRequestResponse containing the request, response & data
-    func record(sequence: MockRequestResponse) {
+    /// - Parameter requestResponse: MockRequestResponse containing the request, response, and data
+    func record(requestResponse: MockRequestResponse) {
         guard
             let recordURL = recordURL,
-            let outputFileName =  SerializationUtils.fileName(for: .request(sequence))
+            let outputFileName =  SerializationUtils.fileName(for: .request(requestResponse))
             else { return }
 
         do {
@@ -105,7 +105,7 @@ final class MockBundle {
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted]
 
-            let data = try encoder.encode(sequence)
+            let data = try encoder.encode(requestResponse)
             let result = String(data: data, encoding: .utf8)
 
             if let data = result?.data(using: .utf8) {
@@ -113,21 +113,21 @@ final class MockBundle {
 
                 // write out request body if the format is supported.
                 // This should be the same filename with a different extension.
-                if let requestBodyFileName = SerializationUtils.fileName(for: .requestBody(sequence)) {
+                if let requestBodyFileName = SerializationUtils.fileName(for: .requestBody(requestResponse)) {
                     let requestBodyURL = recordURL.appendingPathComponent(requestBodyFileName)
-                    try sequence.request.httpBody?.write(to: requestBodyURL, options: [.atomic])
+                    try requestResponse.request.httpBody?.write(to: requestBodyURL, options: [.atomic])
                 }
 
                 // write out response data if the format is supported.
                 // This should be the same filename with a different extension.
-                if let dataFileName = SerializationUtils.fileName(for: .responseData(sequence, sequence)) {
+                if let dataFileName = SerializationUtils.fileName(for: .responseData(requestResponse, requestResponse)) {
                     let dataURL = recordURL.appendingPathComponent(dataFileName)
-                    try sequence.responseData?.write(to: dataURL, options: [.atomic])
+                    try requestResponse.responseData?.write(to: dataURL, options: [.atomic])
                 }
 
                 os_log("Persisted network request to: %@", log: MockDuck.log, type: .debug, outputURL.path)
             } else {
-                os_log("Failed to persist request for: %@", log: MockDuck.log, type: .error, "\(sequence)")
+                os_log("Failed to persist request for: %@", log: MockDuck.log, type: .error, "\(requestResponse)")
             }
         } catch {
             os_log("Failed to persist request: %@", log: MockDuck.log, type: .error, "\(error)")

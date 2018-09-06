@@ -38,13 +38,13 @@ final class MockDataTask: URLSessionDataTask {
         } else if MockDuck.shouldFallbackToNetwork {
             // The request isn't found but we should fallback to the network. Kick off a task with
             // the fallback URLSession.
-            fallbackTask = MockDuck.fallbackSession.dataTask(with: request, completionHandler: { (data, response, error) in
+            fallbackTask = MockDuck.fallbackSession.dataTask(with: request, completionHandler: { data, response, error in
                 if let error = error {
                     self.completion(nil, error)
                 } else if let response = response {
-                    let sequence = MockRequestResponse(request: self.request, response: response, responseData: data)
-                    MockDuck.mockBundle.record(sequence: sequence)
-                    self.completion(sequence, nil)
+                    let requestResponse = MockRequestResponse(request: self.request, response: response, responseData: data)
+                    MockDuck.mockBundle.record(requestResponse: requestResponse)
+                    self.completion(requestResponse, nil)
                 } else {
                     self.completion(nil, ErrorType.unknown)
                 }

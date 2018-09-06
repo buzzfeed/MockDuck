@@ -25,6 +25,9 @@ public protocol MockDuckDelegate: class {
 
 /// Public-facing errors that MockDuck can throw.
 public enum MockDuckError: Error {
+
+    /// HTTPURLResponse has a failable initializer. If MockDuck unexpectedly encounter that, this
+    /// error will be thrown.
     case unableToInitializeURLResponse
 }
 
