@@ -67,23 +67,20 @@ extension MockResponse: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
-        var contentType: String?
         if let response = response as? HTTPURLResponse {
             let headers = response.allHeaderFields as? [String: String]
             try container.encode(response.statusCode, forKey: CodingKeys.responseCode)
             try container.encode(headers, forKey: CodingKeys.responseHeaders)
-            contentType = headers?["Content-Type"]
         } else {
             try container.encode(response.mimeType, forKey: CodingKeys.responseMimeType)
             try container.encode(response.expectedContentLength, forKey: CodingKeys.responseExpectedContentLength)
             try container.encode(response.textEncodingName, forKey: CodingKeys.responseTextEncodingName)
-            contentType = response.mimeType
         }
 
         if
             response.dataSuffix == nil,
             let data = responseData,
-            let body = try EncodingUtils.encodeBody(data, contentType: contentType)
+            let body = try EncodingUtils.encodeBody(data, contentType: response.contentType)
         {
             // Inline the body if not saved on the side
             try container.encode(body, forKey: CodingKeys.responseData)
