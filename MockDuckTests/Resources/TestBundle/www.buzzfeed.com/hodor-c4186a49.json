@@ -1,0 +1,11 @@
+{
+    "request" : {
+        "url" : "https:\/\/www.buzzfeed.com\/hodor",
+        "method" : "GET"
+    },
+    "response" : {
+        "data": "SG9kb3IgaG9kb3IgaG9kb3IgaG9kb3I=",
+        "url" : "https:\/\/www.buzzfeed.com\/hodor",
+        "status_code" : 200
+    }
+}

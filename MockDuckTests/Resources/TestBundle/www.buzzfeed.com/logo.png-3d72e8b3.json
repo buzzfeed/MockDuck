@@ -1,0 +1,16 @@
+{
+    "request" : {
+        "url" : "https:\/\/www.buzzfeed.com\/logo.png",
+        "method" : "GET",
+        "headers" : {
+        }
+    },
+    "response" : {
+        "headers" : {
+            "Content-Type" : "image\/png",
+            "Content-Length" : "4027"
+        },
+        "url" : "https:\/\/www.buzzfeed.com\/logo.png",
+        "status_code" : 200
+    }
+}
