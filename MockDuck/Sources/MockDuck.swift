@@ -40,23 +40,38 @@ public final class MockDuck {
     // MARK: - Public Properties
 
     /// A delegate that allows a class to hook into and modify how MockDuck behaves.
-    public static weak var delegate: MockDuckDelegate?
+    public static weak var delegate: MockDuckDelegate? {
+        willSet {
+            checkConfigureMockDuck()
+        }
+    }
 
     /// By default, MockDuck is enabled, even though it does nothing until configured by setting
     /// `baseURL`, `recordURL`, or by registering a request mock. This is here, however, to allow
     /// developers to quickly disable MockDuck by setting this to `false`.
-    public static var enabled = true
+    public static var enabled = true {
+        willSet {
+            checkConfigureMockDuck()
+        }
+    }
 
     /// By default, MockDuck will fallback to making a network request if the request can not be
     /// loaded from `baseURL` or if the request can not be handled by a registered request mock.
     /// Set this to `false` to force an error that resembles what `URLSession` provides when the
     /// network is unreachable.
-    public static var shouldFallbackToNetwork = true
+    public static var shouldFallbackToNetwork = true {
+        willSet {
+            checkConfigureMockDuck()
+        }
+    }
 
     /// When MockDuck falls back to making a normal network request, it will use a URLSession
     /// configured with this object. You can hook in here to modify how these fallback requests
     /// are made.
     public static var fallbackSessionConfiguration = URLSessionConfiguration.default {
+        willSet {
+            checkConfigureMockDuck()
+        }
         didSet {
             fallbackSession = URLSession(configuration: fallbackSessionConfiguration)
         }

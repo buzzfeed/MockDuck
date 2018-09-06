@@ -23,13 +23,9 @@ class MockURLProtocol: URLProtocol, URLSessionDelegate, URLSessionDataDelegate {
     }
 
     override class func canInit(with request: URLRequest) -> Bool {
-        // Bail out and do nothing if MockDuck has not been configured with the ability to mock out
-        // any requests.
         guard
-            (MockDuck.enabled ||
-            MockDuck.baseURL != nil ||
-            MockDuck.recordURL != nil ||
-            MockDuck.mockBundle.hasRegisteredRequestHandlers())
+            MockDuck.enabled,
+            (request.url?.scheme == "http" || request.url?.scheme == "https")
             else { return false }
 
         // Check to be sure that we haven't yet handled this particular request. See the comment
