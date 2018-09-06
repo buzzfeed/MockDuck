@@ -10,13 +10,12 @@ import Foundation
 
 final class EncodingUtils {
     private enum Constants: String {
-        case content_type = "Content-Type"
         case json = "application/json"
         case text = "text/"
     }
 
-    static func encodeBody(_ body: Data, headers: [String: String]? = nil) throws -> String? {
-        if let contentType = headers?[Constants.content_type.rawValue] {
+    static func encodeBody(_ body: Data, contentType: String?) throws -> String? {
+        if let contentType = contentType {
 
             // Text
             if contentType.hasPrefix(Constants.text.rawValue) {
@@ -38,9 +37,10 @@ final class EncodingUtils {
         return body.base64EncodedString(options: [])
     }
 
-    static func decodeBody(_ body: String, headers: [String: String]? = nil) -> Data? {
+    static func decodeBody(_ body: String, contentType: String?) -> Data? {
         var retVal: Data? = nil
-        if let contentType = headers?[Constants.content_type.rawValue] {
+
+        if let contentType = contentType {
             // Text or JSON
             if contentType.hasPrefix(Constants.json.rawValue) || contentType.hasPrefix(Constants.text.rawValue) {
                 // TODO: Use encoding if specified in headers

@@ -23,14 +23,13 @@ extension URLRequest: Codable {
 
         self.init(url: url)
 
-        self.httpMethod = try values.decode(String.self, forKey: CodingKeys.httpMethod)
-
-        self.allHTTPHeaderFields = try? values.decode([String: String].self, forKey: CodingKeys.allHTTPHeaderFields)
+        self.httpMethod = try values.decodeIfPresent(String.self, forKey: CodingKeys.httpMethod)
+        self.allHTTPHeaderFields = try values.decodeIfPresent([String: String].self, forKey: CodingKeys.allHTTPHeaderFields)
 
         // Decode the encoded string that was representing the body
         if
-            let string = try? values.decode(String.self, forKey: CodingKeys.httpBody),
-            let decodedBody = EncodingUtils.decodeBody(string, headers: self.allHTTPHeaderFields)
+            let encodedBody = try values.decodeIfPresent(String.self, forKey: CodingKeys.httpBody),
+            let decodedBody = EncodingUtils.decodeBody(encodedBody, contentType: self.allHTTPHeaderFields?["Content-Type"])
         {
             self.httpBody = decodedBody
         }
@@ -38,6 +37,7 @@ extension URLRequest: Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+
         if let method = httpMethod {
             try container.encode(method, forKey: CodingKeys.httpMethod)
         }
@@ -54,7 +54,7 @@ extension URLRequest: Codable {
             dataSuffix == nil,
             let data = httpBody
         {
-            let encodedBody = try EncodingUtils.encodeBody(data, headers: allHTTPHeaderFields)
+            let encodedBody = try EncodingUtils.encodeBody(data, contentType: allHTTPHeaderFields?["Content-Type"])
             try container.encode(encodedBody, forKey: CodingKeys.httpBody)
         }
     }
