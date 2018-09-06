@@ -9,13 +9,20 @@
 // Configuration settings file format documentation can be found at:
 // https://help.apple.com/xcode/#/dev745c5c974
 
-SUPPORTED_PLATFORMS = iphonesimulator iphoneos appletvsimulator appletvos
-VALID_ARCHS = arm64 armv7 armv7s
+SUPPORTED_PLATFORMS = iphonesimulator iphoneos appletvsimulator appletvos macosx
+VALID_ARCHS = arm64 armv7 armv7s i386 x86_64
 
 IPHONEOS_DEPLOYMENT_TARGET = 10.0
+MACOSX_DEPLOYMENT_TARGET = 10.13
 TVOS_DEPLOYMENT_TARGET = 10.0
 
+TARGETED_DEVICE_FAMILY[sdk=iphoneos*] = 1,2
 TARGETED_DEVICE_FAMILY[sdk=iphonesimulator*] = 1,2
-TARGETED_DEVICE_FAMILY[sdk=iphone*] = 1,2
+TARGETED_DEVICE_FAMILY[sdk=appletvos*] = 3
 TARGETED_DEVICE_FAMILY[sdk=appletvsimulator*] = 3
-TARGETED_DEVICE_FAMILY[sdk=appletv*] = 3
+
+LD_RUNPATH_SEARCH_PATHS[sdk=iphoneos*] = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
+LD_RUNPATH_SEARCH_PATHS[sdk=iphonesimulator*] = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
+LD_RUNPATH_SEARCH_PATHS[sdk=appletvos*] = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
+LD_RUNPATH_SEARCH_PATHS[sdk=appletvsimulator*] = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
+LD_RUNPATH_SEARCH_PATHS[sdk=macosx*] = $(inherited) @executable_path/../Frameworks @loader_path/../Frameworks
