@@ -51,6 +51,7 @@
 		63C6D888214170A100AA5700 /* hodor-c4186a49.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "hodor-c4186a49.json"; sourceTree = "<group>"; };
 		63C6D8892141752100AA5700 /* septa-unella-be03e885.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "septa-unella-be03e885.json"; sourceTree = "<group>"; };
 		63C6D88A214175B400AA5700 /* septa-unella-be03e885-response.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "septa-unella-be03e885-response.json"; sourceTree = "<group>"; };
+		63D24C932141B08100D7CDCC /* MockDuck.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = MockDuck.xcconfig; sourceTree = "<group>"; };
 		7A4FD5BF20618A250081600A /* MockDuck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDuck.swift; sourceTree = "<group>"; };
 		7A4FD5C3206199F90081600A /* MockDataTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDataTask.swift; sourceTree = "<group>"; };
 		7A65B58920603CC50056B4BB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -187,6 +188,7 @@
 		7AA36C0A20603C2700E6EF62 /* MockDuck */ = {
 			isa = PBXGroup;
 			children = (
+				63D24C932141B08100D7CDCC /* MockDuck.xcconfig */,
 				7A65B58820603CC50056B4BB /* Resources */,
 				7A65B58A20603CC50056B4BB /* Sources */,
 			);
@@ -371,6 +373,7 @@
 /* Begin XCBuildConfiguration section */
 		7AA36C1A20603C2700E6EF62 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 63D24C932141B08100D7CDCC /* MockDuck.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -427,14 +430,12 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -442,6 +443,7 @@
 		};
 		7AA36C1B20603C2700E6EF62 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 63D24C932141B08100D7CDCC /* MockDuck.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -492,12 +494,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -544,6 +544,7 @@
 		7AA36C2020603C2700E6EF62 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = MockDuckTests/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.buzzfeed.MockDuckTests;
@@ -554,6 +555,7 @@
 		7AA36C2120603C2700E6EF62 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = MockDuckTests/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.buzzfeed.MockDuckTests;
