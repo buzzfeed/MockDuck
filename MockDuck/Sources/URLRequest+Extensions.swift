@@ -29,7 +29,7 @@ extension URLRequest: Codable {
         // Decode the encoded string that was representing the body
         if
             let encodedBody = try values.decodeIfPresent(String.self, forKey: CodingKeys.httpBody),
-            let decodedBody = EncodingUtils.decodeBody(encodedBody, contentType: self.allHTTPHeaderFields?["Content-Type"])
+            let decodedBody = EncodingUtils.decodeBody(encodedBody, contentType: self.contentType)
         {
             self.httpBody = decodedBody
         }
@@ -54,7 +54,7 @@ extension URLRequest: Codable {
             dataSuffix == nil,
             let data = httpBody
         {
-            let encodedBody = try EncodingUtils.encodeBody(data, contentType: allHTTPHeaderFields?["Content-Type"])
+            let encodedBody = try EncodingUtils.encodeBody(data, contentType: self.contentType)
             try container.encode(encodedBody, forKey: CodingKeys.httpBody)
         }
     }
