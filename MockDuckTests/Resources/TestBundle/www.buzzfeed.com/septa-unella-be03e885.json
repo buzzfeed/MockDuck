@@ -1,0 +1,13 @@
+{
+    "request" : {
+        "url" : "https:\/\/www.buzzfeed.com\/septa-unella",
+        "method" : "GET"
+    },
+    "response" : {
+        "headers" : {
+            "Content-Type" : "application\/json"
+        },
+        "url" : "https:\/\/www.buzzfeed.com\/septa-unella",
+        "status_code" : 200
+    }
+}
