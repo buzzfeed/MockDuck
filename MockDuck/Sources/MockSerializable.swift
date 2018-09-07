@@ -87,7 +87,7 @@ private extension URLRequest {
         }
 
         if !hashData.isEmpty {
-            return String(MDCryptoUtils.md5String(hashData).prefix(8))
+            return String(CryptoUtils.md5(hashData).prefix(8))
         } else {
             return ""
         }
