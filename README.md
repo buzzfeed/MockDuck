@@ -87,10 +87,14 @@ Please note that on macOS MockDuck requires 10.12 or newer, so you will have to 
 
 MockDuck can also be integrated into your project manually by using git submodules. Once you have added your submodule, simply drag `MockDuck.xcodeproj` into your Xcode project or workspace and then have your target link against `MockDuck.framework`.
 
-## Related Projects
+## Versioning
+
+We use [Semantic Versioning](http://semver.org/) for MockDuck releases. For the versions available, take a look at the [tags on this repository](https://github.com/buzzfeed/MockDuck/tags).
+
+## Acknowledgements
 
 * [VCR](https://github.com/vcr/vcr) is a tool that heavily inspired MockDuck. It excels at recording and replaying network requests. While VCR is written in Ruby, there are a few iOS and macOS tools inspired by VCR including [VCRURLConnection](https://github.com/dstnbrkr/VCRURLConnection) and [DVR](https://github.com/venmo/DVR).
-* [OHHTTPStubs](https://github.com/AliSoftware/OHHTTPStubs) is a library that allows you to test your apps using fake network data.
+* [OHHTTPStubs](https://github.com/AliSoftware/OHHTTPStubs) is a great tool that provides a simple API to stub out network requests in unit tests. This provided inspiration for MockDuck's request mocking feature described above.
 
 ## License
 
