@@ -14,9 +14,73 @@ public final class MockResponse {
     let response: URLResponse
     var responseData: Data?
 
-    init(response: URLResponse, responseData: Data?) {
+    /// Designated initializer for MockResponse.
+    public init(response: URLResponse, responseData: Data?) {
         self.response = response
         self.responseData = responseData
+    }
+
+    /// Generate a MockResponse from a request without any response data.
+    ///
+    /// - Parameters:
+    ///   - request: The request which should generate the mock response.
+    ///   - statusCode: The status code of the mocked response. Defaults to 200.
+    ///   - headers: The HTTP headers of the mocked response.
+    /// - Returns: The mocked response
+    public convenience init(
+        for request: URLRequest,
+        statusCode: Int = 200,
+        headers: [String: String]? = nil)
+        throws
+    {
+        guard
+            let url = request.url,
+            let response = HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: nil, headerFields: headers)
+            else { throw MockDuckError.unableToInitializeURLResponse }
+
+        self.init(response: response, responseData: nil)
+    }
+
+    /// Generate a MockResponse from a request with generic response data.
+    ///
+    /// - Parameters:
+    ///   - request: The request which should generate the mock response.
+    ///   - data: The data associated with the mock response.
+    ///   - statusCode: The status code of the mocked response. Defaults to 200.
+    ///   - headers: The HTTP headers of the mocked response.
+    /// - Returns: The mocked response
+    public convenience init(
+        for request: URLRequest,
+        data: Data?,
+        statusCode: Int = 200,
+        headers: [String: String]? = nil)
+        throws
+    {
+        guard
+            let url = request.url,
+            let response = HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: nil, headerFields: headers)
+            else { throw MockDuckError.unableToInitializeURLResponse }
+
+        self.init(response: response, responseData: data)
+    }
+
+    /// Generate a MockResponse from this request with JSON response data.
+    ///
+    /// - Parameters:
+    ///   - request: The request which should generate the mock response.
+    ///   - json: The JSON object to be returned by the resonse. Should be a valid JSON object.
+    ///   - statusCode: The status code of the mocked response. Defaults to 200.
+    ///   - headers: The HTTP headers of the mocked response.
+    /// - Returns: The mocked response
+    public convenience init(
+        for request: URLRequest,
+        json: Any,
+        statusCode: Int = 200,
+        headers: [String: String]? = nil)
+        throws
+    {
+        let data = try JSONSerialization.data(withJSONObject: json, options: [])
+        try self.init(for: request, data: data, statusCode: statusCode, headers: headers)
     }
 }
 

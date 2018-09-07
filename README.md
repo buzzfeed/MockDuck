@@ -12,7 +12,7 @@ MockDuck ships with basic support for mocking network requests in code. This is 
 ```swift
 MockDuck.registerRequestHandler { request in
     if request.url?.absoluteString == "https://api.buzzfeed.com/create_user" {
-        return try? request.mockResponse(statusCode: 201)
+        return try? MockResponse(for: request, statusCode: 201)
     } else {
         return nil
     }

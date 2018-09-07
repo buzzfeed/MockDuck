@@ -28,7 +28,7 @@ class RequestHandlerTests: XCTestCase {
         let statusCode = 201
 
         MockDuck.registerRequestHandler { request in
-            return try! request.mockResponse(statusCode: statusCode)
+            return try! MockResponse(for: request, statusCode: statusCode)
         }
 
         let expectation = self.expectation(description: "Mocked network request")
@@ -47,7 +47,7 @@ class RequestHandlerTests: XCTestCase {
         let headerValue = "Some Value"
 
         MockDuck.registerRequestHandler { request in
-            return try! request.mockResponse(headers: [headerName : headerValue])
+            return try! MockResponse(for: request, headers: [headerName : headerValue])
         }
 
         let expectation = self.expectation(description: "Mocked network request")
@@ -65,7 +65,7 @@ class RequestHandlerTests: XCTestCase {
         let mockData = Data(bytes: [1, 5, 2, 4])
 
         MockDuck.registerRequestHandler { request in
-            return try! request.mockResponse(data: mockData)
+            return try! MockResponse(for: request, data: mockData)
         }
 
         let expectation = self.expectation(description: "Mocked network request")
@@ -86,7 +86,7 @@ class RequestHandlerTests: XCTestCase {
         ]
 
         MockDuck.registerRequestHandler { request in
-            return try! request.mockResponse(json: json)
+            return try! MockResponse(for: request, json: json)
         }
 
         let expectation = self.expectation(description: "Mocked network request")
@@ -112,9 +112,9 @@ class RequestHandlerTests: XCTestCase {
 
         MockDuck.registerRequestHandler { request in
             if request.url?.host == "www.buzzfeed.com" {
-                return try! request.mockResponse(statusCode: statusCode1)
+                return try! MockResponse(for: request, statusCode: statusCode1)
             } else if request.url?.host == "tasty.co" {
-                return try! request.mockResponse(statusCode: statusCode2)
+                return try! MockResponse(for: request, statusCode: statusCode2)
             } else {
                 return nil
             }
