@@ -1,0 +1,16 @@
+version: 2
+
+defaults: &defaults
+  macos:
+    xcode: "10.0.0"
+
+jobs:
+  build:
+    <<: *defaults
+
+    steps:
+      - checkout
+
+      - run:
+          name: Run Tests
+          command: make test
