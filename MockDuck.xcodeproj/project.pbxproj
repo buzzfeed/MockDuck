@@ -7,12 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		63AB561D20A345730033EEBD /* MDCryptoUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AB561B20A345720033EEBD /* MDCryptoUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		63AB561E20A345730033EEBD /* MDCryptoUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AB561C20A345720033EEBD /* MDCryptoUtils.m */; };
 		63C6D87921405F7600AA5700 /* SerializationUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C6D87821405F7600AA5700 /* SerializationUtils.swift */; };
 		63C6D87B21407BD700AA5700 /* RequestHashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C6D87A21407BD700AA5700 /* RequestHashTests.swift */; };
 		63C6D87D214080C800AA5700 /* MockURLProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C6D87C214080C800AA5700 /* MockURLProtocolTests.swift */; };
 		63C6D87F2140853E00AA5700 /* MockBundleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C6D87E2140853E00AA5700 /* MockBundleTests.swift */; };
+		63D24C982142C51900D7CDCC /* CryptoUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D24C972142C51900D7CDCC /* CryptoUtils.swift */; };
 		7A4FD5C020618A250081600A /* MockDuck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4FD5BF20618A250081600A /* MockDuck.swift */; };
 		7A4FD5C4206199F90081600A /* MockDataTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4FD5C3206199F90081600A /* MockDataTask.swift */; };
 		7A65B59520603CCD0056B4BB /* RequestHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A65B59320603CCD0056B4BB /* RequestHandlerTests.swift */; };
@@ -39,8 +38,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		63AB561B20A345720033EEBD /* MDCryptoUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDCryptoUtils.h; sourceTree = "<group>"; };
-		63AB561C20A345720033EEBD /* MDCryptoUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDCryptoUtils.m; sourceTree = "<group>"; };
 		63C6D87821405F7600AA5700 /* SerializationUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializationUtils.swift; sourceTree = "<group>"; };
 		63C6D87A21407BD700AA5700 /* RequestHashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestHashTests.swift; sourceTree = "<group>"; };
 		63C6D87C214080C800AA5700 /* MockURLProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocolTests.swift; sourceTree = "<group>"; };
@@ -52,6 +49,7 @@
 		63C6D8892141752100AA5700 /* septa-unella-be03e885.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "septa-unella-be03e885.json"; sourceTree = "<group>"; };
 		63C6D88A214175B400AA5700 /* septa-unella-be03e885-response.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "septa-unella-be03e885-response.json"; sourceTree = "<group>"; };
 		63D24C932141B08100D7CDCC /* MockDuck.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = MockDuck.xcconfig; sourceTree = "<group>"; };
+		63D24C972142C51900D7CDCC /* CryptoUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoUtils.swift; sourceTree = "<group>"; };
 		7A4FD5BF20618A250081600A /* MockDuck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDuck.swift; sourceTree = "<group>"; };
 		7A4FD5C3206199F90081600A /* MockDataTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDataTask.swift; sourceTree = "<group>"; };
 		7A65B58920603CC50056B4BB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -159,9 +157,8 @@
 		7A6E2369207FAC380083952F /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				63D24C972142C51900D7CDCC /* CryptoUtils.swift */,
 				7A6E235F207FAA990083952F /* EncodingUtils.swift */,
-				63AB561B20A345720033EEBD /* MDCryptoUtils.h */,
-				63AB561C20A345720033EEBD /* MDCryptoUtils.m */,
 				63C6D87821405F7600AA5700 /* SerializationUtils.swift */,
 			);
 			path = Utilities;
@@ -211,7 +208,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63AB561D20A345730033EEBD /* MDCryptoUtils.h in Headers */,
 				7A65B5AA20603EE10056B4BB /* MockDuck.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -268,11 +264,12 @@
 				TargetAttributes = {
 					7AA36C0720603C2700E6EF62 = {
 						CreatedOnToolsVersion = 9.2;
-						LastSwiftMigration = 0930;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					7AA36C1020603C2700E6EF62 = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -325,7 +322,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp -rf $SRCROOT/MockDuckTests/Resources/TestBundle $CODESIGNING_FOLDER_PATH/";
+			shellScript = "cp -rf $SRCROOT/MockDuckTests/Resources/TestBundle $CODESIGNING_FOLDER_PATH/\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -336,7 +333,7 @@
 			files = (
 				7ABF6CAC2072AB9D008550CA /* MockSerializable.swift in Sources */,
 				7A969D46206947F700656966 /* MockBundle.swift in Sources */,
-				63AB561E20A345730033EEBD /* MDCryptoUtils.m in Sources */,
+				63D24C982142C51900D7CDCC /* CryptoUtils.swift in Sources */,
 				7A4FD5C4206199F90081600A /* MockDataTask.swift in Sources */,
 				7A65B5AC206040FA0056B4BB /* MockURLProtocol.swift in Sources */,
 				7ABF6CAA2072AB43008550CA /* URLRequest+Extensions.swift in Sources */,
@@ -519,6 +516,7 @@
 				PRODUCT_NAME = MockDuck;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -536,6 +534,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.buzzfeed.MockDuck;
 				PRODUCT_NAME = MockDuck;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -546,6 +545,7 @@
 				INFOPLIST_FILE = MockDuckTests/Resources/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.buzzfeed.MockDuckTests;
 				PRODUCT_NAME = MockDuckTests;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -556,6 +556,7 @@
 				INFOPLIST_FILE = MockDuckTests/Resources/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.buzzfeed.MockDuckTests;
 				PRODUCT_NAME = MockDuckTests;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
