@@ -123,9 +123,7 @@ public final class MockDuck {
     /// - Parameter handler: The handler to register. It receives a single parameter being the
     /// URLRequest that is about to be made. This block should return `nil` to do nothing with that
     /// request. Otherwise, it should return a `MockResponse` object that describes the full
-    /// response that should be used for that request. You can use the extensions provided to
-    /// `URLRequest.` to easily create a `MockResponse` for any request. See the various
-    /// `mockResponse` functions in `URLRequest+Extensions.swift`.
+    /// response that should be used for that request.
     public static func registerRequestHandler(_ handler: @escaping RequestHandler) {
         checkConfigureMockDuck()
         mockBundle.registerRequestHandler(handler)
