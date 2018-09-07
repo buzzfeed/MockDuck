@@ -11,7 +11,7 @@ import Foundation
 /// A basic class that holds onto a URLResponse and its associated data.
 public final class MockResponse {
 
-    let response: URLResponse
+    var response: URLResponse
     var responseData: Data?
 
     /// Designated initializer for MockResponse.

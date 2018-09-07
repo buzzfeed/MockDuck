@@ -13,8 +13,14 @@ final class MockRequestResponse: Codable {
 
     // MARK: - Properties
 
-    var request: URLRequest
-    private var responseWrapper: MockResponse
+    var request: URLRequest {
+        get {
+            return requestWrapper.request
+        }
+        set {
+            requestWrapper.request = newValue
+        }
+    }
 
     var response: URLResponse {
         return responseWrapper.response
@@ -29,10 +35,13 @@ final class MockRequestResponse: Codable {
         }
     }
 
+    private var requestWrapper: MockRequest
+    private var responseWrapper: MockResponse
+
     // MARK: - Initializers
 
     init(request: URLRequest, response: URLResponse, responseData: Data? = nil) {
-        self.request = request
+        self.requestWrapper = MockRequest(request: request)
         self.responseWrapper = MockResponse(response: response, responseData: responseData)
     }
 
@@ -43,13 +52,13 @@ final class MockRequestResponse: Codable {
     // MARK: - Codable
 
     enum CodingKeys: String, CodingKey {
-        case request
+        case requestWrapper = "request"
         case responseWrapper = "response"
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        request = try container.decode(URLRequest.self, forKey: .request)
+        requestWrapper = try container.decode(MockRequest.self, forKey: .requestWrapper)
         responseWrapper = try container.decode(MockResponse.self, forKey: .responseWrapper)
     }
 }
