@@ -15,8 +15,17 @@ class MockBundleTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+
+        let filePath = String(describing: #file)
+        let fileURL = URL(fileURLWithPath: filePath)
+        let bundleURL = fileURL
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appendingPathComponent("Resources")
+            .appendingPathComponent("TestBundle")
+
         MockDuck.shouldFallbackToNetwork = false
-        baseURL = Bundle(for: MockBundleTests.self).bundleURL.appendingPathComponent("TestBundle")
+        baseURL = bundleURL
         recordURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("MockBundleTests")
     }
 
