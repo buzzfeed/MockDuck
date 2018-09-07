@@ -65,6 +65,22 @@ pod 'MockDuck'
 github "BuzzFeed/MockDuck" "master"
 ```
 
+### Swift Package Manager
+
+[Swift Package Manager](https://swift.org/getting-started/#using-the-package-manager) is a tool for managing distribution of source code written in Swift. To integrate MockDuck with your Swift library or application, add it as a dependency to your `Package.swift`:
+
+```swift
+    dependencies: [
+        .package(url: "https://github.com/BuzzFeed/MockDuck", .branch("master"))
+    ],
+    targets: [
+        .target(
+            name: "your-target-name",
+            dependencies: ["MockDuck"]
+        )
+    ]
+```
+
 ### Manually
 
 MockDuck can also be integrated into your project manually by using git submodules. Once you have added your submodule, simply drag `MockDuck.xcodeproj` into your Xcode project or workspace and then have your target link against `MockDuck.framework`.

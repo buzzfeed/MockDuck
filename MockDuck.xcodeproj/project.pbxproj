@@ -50,6 +50,7 @@
 		63C6D88A214175B400AA5700 /* septa-unella-be03e885-response.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "septa-unella-be03e885-response.json"; sourceTree = "<group>"; };
 		63D24C932141B08100D7CDCC /* MockDuck.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = MockDuck.xcconfig; sourceTree = "<group>"; };
 		63D24C972142C51900D7CDCC /* CryptoUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoUtils.swift; sourceTree = "<group>"; };
+		63D24C992142C84900D7CDCC /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		7A4FD5BF20618A250081600A /* MockDuck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDuck.swift; sourceTree = "<group>"; };
 		7A4FD5C3206199F90081600A /* MockDataTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDataTask.swift; sourceTree = "<group>"; };
 		7A65B58920603CC50056B4BB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -167,6 +168,7 @@
 		7AA36BFE20603C2700E6EF62 = {
 			isa = PBXGroup;
 			children = (
+				63D24C992142C84900D7CDCC /* Package.swift */,
 				7AA36C0A20603C2700E6EF62 /* MockDuck */,
 				7AA36C1520603C2700E6EF62 /* MockDuckTests */,
 				7AA36C0920603C2700E6EF62 /* Products */,
@@ -239,7 +241,6 @@
 			buildPhases = (
 				7AA36C0D20603C2700E6EF62 /* Sources */,
 				7AA36C0E20603C2700E6EF62 /* Frameworks */,
-				63C6D884214169B200AA5700 /* Copy Test Bundle */,
 				7AA36C0F20603C2700E6EF62 /* Resources */,
 			);
 			buildRules = (
@@ -308,23 +309,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		63C6D884214169B200AA5700 /* Copy Test Bundle */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Test Bundle";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "cp -rf $SRCROOT/MockDuckTests/Resources/TestBundle $CODESIGNING_FOLDER_PATH/\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7AA36C0320603C2700E6EF62 /* Sources */ = {
