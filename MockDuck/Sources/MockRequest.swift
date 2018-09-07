@@ -8,6 +8,8 @@
 
 import Foundation
 
+/// A very basic wrapper around URLRequest that allows us to read and write this data to disk
+/// using Codable without having to make URLRequest itself conform to Codable.
 final class MockRequest {
     var request: URLRequest
 
