@@ -140,19 +140,19 @@ public final class MockDuck {
 
     // MARK: - Internal Use Only
 
-    /// This is the session MockDuck will fallback to using if the mocked request is not found and
-    /// if `MockDuck.shouldFallbackToNetwork` is `true`.
-    internal static var fallbackSession = URLSession.shared
-
     /// MockDuck uses this to log all of its messages.
     internal static let log = OSLog(subsystem: "com.buzzfeed.MockDuck", category: "default")
 
+    /// This is the session MockDuck will fallback to using if the mocked request is not found and
+    /// if `MockDuck.shouldFallbackToNetwork` is `true`.
+    internal private(set) static var fallbackSession = URLSession.shared
+
     // This is the URLSession subclass that we use to handle all mocked network requests.
-    internal static var mockSession = MockSession()
+    internal private(set) static var mockSession = MockSession()
 
     /// This is the object responsible for loading cached requests from disks as well as recording
     /// new requests to disk.
-    internal static var mockBundle = MockBundle()
+    internal private(set) static var mockBundle = MockBundle()
 
     // MARK: - Private Configuration
 

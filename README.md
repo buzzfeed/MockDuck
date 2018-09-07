@@ -1,6 +1,51 @@
 # MockDuck
 
-A network mocking layer for iOS and macOS
+MockDuck is a network mocking layer written in [Swift](https://swift.org) for iOS, tvOS, and macOS. It has the following major features:
+
+1. MockDuck can record all network traffic to disk. This recorded data can then be used while you run your app, as well as provide a more stable infrastructure for your UI and unit tests.
+2. With a few lines of code, MockDuck can hijack any `URLRequest` and provide a mocked `URLResponse` with its associated data.
+
+## Request Mocking
+
+MockDuck ships with basic support for mocking network requests in code. This is a great way to add reliability and stability to your unit tests. For example:
+
+```swift
+MockDuck.registerRequestHandler { request in
+    if request.url?.absoluteString == "https://api.buzzfeed.com/create_user" {
+        return try? request.mockResponse(statusCode: 201)
+    } else {
+        return nil
+    }
+}
+```
+
+MockDuck also supports specifying the HTTP response headers, as well as JSON or any other data in the response payload. Don't forget to call `MockDuck.unregisterAllRequestHandlers()` in the `tearDown` method of your test case classes!
+
+## Recording & Replaying
+
+To begin capturing network activity in a MockDuck session, simply tell MockDuck where it should record requests and their responses:
+
+```swift
+MockDuck.recordURL = URL(fileURLWithPath: "/tmp/MockDuckRecording")
+```
+
+And then when you want to stop recording:
+
+```swift
+MockDuck.recordURL = nil
+```
+
+You can now (or in a future launch of your app) tell MockDuck to use this recording to replay any matching requests:
+
+```swift
+MockDuck.baseURL = URL(fileURLWithPath: "/tmp/MockDuckRecording")
+```
+
+In this scenario, any request that is not found in your recording will cause MockDuck to fallback to the network. If you would rather that these requests simply fail, you can set `MockDuck.shouldFallbackToNetwork` to `false`. In this scenario, anyone who makes a network request that can not be handled by the recording will receive a `URLError` error with a `.NotConnectedToInternet` code.
+
+One of the goals of MockDuck is to make the recordings as easy as possible for humans to read and modify. When it makes sense, the entire request and response are written as a single JSON file in the recording directory. If the response also includes an image, a text file, or a JSON file, that data will be stored in a separate file right next to the request/response JSON. If a different format of data is returned, that data will be Base64 encoded and written as a value in the JSON file. Any of these files can be modified however you like to alter the mocked response.
+
+We recommend crafting a few different recordings for different ways to use your app. For example, you may want to create one recording for your app's happy path, another that captures various failure scenarios, and another for anonymous users who have not logged in.
 
 ## Installation
 
@@ -23,3 +68,12 @@ github "BuzzFeed/MockDuck" "master"
 ### Manually
 
 MockDuck can also be integrated into your project manually by using git submodules. Once you have added your submodule, simply drag `MockDuck.xcodeproj` into your Xcode project or workspace and then have your target link against `MockDuck.framework`.
+
+## Related Projects
+
+* [VCR](https://github.com/vcr/vcr) is a tool that heavily inspired MockDuck. It excels at recording and replaying network requests. While VCR is written in Ruby, there are a few iOS and macOS tools inspired by VCR including [VCRURLConnection](https://github.com/dstnbrkr/VCRURLConnection) and [DVR](https://github.com/venmo/DVR).
+* [OHHTTPStubs](https://github.com/AliSoftware/OHHTTPStubs) is a library that allows you to test your apps using fake network data.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
