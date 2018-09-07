@@ -81,6 +81,8 @@ github "BuzzFeed/MockDuck" "master"
     ]
 ```
 
+Please note that on macOS MockDuck requires 10.12 or newer, so you will have to specify `-Xswiftc "x86_64-apple-macosx10.12"` as an argument to your `swift build`, `swift run`, and `swift test` commands.
+
 ### Manually
 
 MockDuck can also be integrated into your project manually by using git submodules. Once you have added your submodule, simply drag `MockDuck.xcodeproj` into your Xcode project or workspace and then have your target link against `MockDuck.framework`.
