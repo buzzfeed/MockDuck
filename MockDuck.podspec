@@ -10,7 +10,7 @@ Pod::Spec.new do |spec|
 
   spec.swift_version = '4.0'
   spec.ios.deployment_target  = '10.0'
-  spec.osx.deployment_target  = '10.13'
+  spec.osx.deployment_target  = '10.12'
 
   spec.pod_target_xcconfig = {
     'FRAMEWORK_SEARCH_PATHS' => '$(PLATFORM_DIR)/Developer/Library/Frameworks',
