@@ -37,7 +37,7 @@ public enum MockDuckError: Error {
 /// registering MockDuck as a URLProtocol that allows it to intercept network traffic.
 public final class MockDuck {
 
-    // MARK: - Public Properties
+    // MARK: - Public
 
     /// A delegate that allows a class to hook into and modify how MockDuck behaves.
     public static weak var delegate: MockDuckDelegate? {
@@ -158,7 +158,67 @@ public final class MockDuck {
 
     private static func checkConfigureMockDuck() {
         guard !isConfigured else { return }
+
+        // Register our URLProtocol class
         URLProtocol.registerClass(MockURLProtocol.self)
+
+        // Swizzle the default `URLSessionConfiguration` getters so that MockDuck automatically
+        // works with other URLSessions.
+        swizzleURLSessionConfiguration()
+
         isConfigured = true
+    }
+
+    private static func swizzleURLSessionConfiguration() {
+        let sessionConfigurationClass = URLSessionConfiguration.self
+
+        if
+            let originalMethod = class_getClassMethod(
+                sessionConfigurationClass,
+                #selector(getter: URLSessionConfiguration.default)),
+            let swizzledMethod = class_getClassMethod(
+                sessionConfigurationClass,
+                #selector(getter: URLSessionConfiguration.mockDuck_defaultSessionConfiguration))
+        {
+            method_exchangeImplementations(originalMethod, swizzledMethod)
+        }
+
+        if
+            let originalMethod = class_getClassMethod(
+                sessionConfigurationClass,
+                #selector(getter: URLSessionConfiguration.ephemeral)),
+            let swizzledMethod = class_getClassMethod(
+                sessionConfigurationClass,
+                #selector(getter: URLSessionConfiguration.mockDuck_ephemeralSessionConfiguration))
+        {
+            method_exchangeImplementations(originalMethod, swizzledMethod)
+        }
+    }
+
+    /// Prepare a `URLSessionConfiguration` so that MockDuck can properly intercept request made by
+    /// the resulting session. MockDuck swizzles `URLSessionConfiguration.default` and
+    /// `URLSessionConfiguration.ephemeral` so that these configurations are properly configured by
+    /// default.
+    ///
+    /// - Parameter configuration: The URL session configuration to prepare for MockDuck. Any URL
+    /// session that uses this configuration will be properly setup for MockDuck interception.
+    fileprivate static func prepareSessionConfiguration(_ configuration: URLSessionConfiguration) {
+        var protocolClasses = configuration.protocolClasses ?? []
+        protocolClasses.insert(MockURLProtocol.self, at: 0)
+        configuration.protocolClasses = protocolClasses
+    }
+}
+
+extension URLSessionConfiguration {
+    @objc dynamic static var mockDuck_defaultSessionConfiguration: URLSessionConfiguration {
+        let configuration = URLSessionConfiguration.mockDuck_defaultSessionConfiguration
+        MockDuck.prepareSessionConfiguration(configuration)
+        return configuration
+    }
+
+    @objc dynamic static var mockDuck_ephemeralSessionConfiguration: URLSessionConfiguration {
+        let configuration = URLSessionConfiguration.mockDuck_ephemeralSessionConfiguration
+        MockDuck.prepareSessionConfiguration(configuration)
+        return configuration
     }
 }
