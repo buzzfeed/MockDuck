@@ -1,3 +1,5 @@
+<p align="center"><img src ="mockduck.png?raw=true" alt="MockDuck Mascot" title="MockDuck" /></p>
+
 # MockDuck
 
 MockDuck is a network mocking layer written in [Swift](https://swift.org) for iOS, tvOS, and macOS. It has the following major features:
@@ -93,6 +95,7 @@ We use [Semantic Versioning](http://semver.org/) for MockDuck releases. For the 
 
 ## Acknowledgements
 
+* Our wonderful [mascot](mockduck.png) was lovingly created by [Celine Chang](http://celinechang.com/).
 * [VCR](https://github.com/vcr/vcr) is a tool that heavily inspired MockDuck. It excels at recording and replaying network requests. While VCR is written in Ruby, there are a few iOS and macOS tools inspired by VCR including [VCRURLConnection](https://github.com/dstnbrkr/VCRURLConnection) and [DVR](https://github.com/venmo/DVR).
 * [OHHTTPStubs](https://github.com/AliSoftware/OHHTTPStubs) is a great tool that provides a simple API to stub out network requests in unit tests. This provided inspiration for MockDuck's request mocking feature described above.
 
