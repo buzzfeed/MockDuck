@@ -76,10 +76,7 @@ github "BuzzFeed/MockDuck" "master"
         .package(url: "https://github.com/BuzzFeed/MockDuck", .branch("master"))
     ],
     targets: [
-        .target(
-            name: "your-target-name",
-            dependencies: ["MockDuck"]
-        )
+        .target(name: "your-target-name", dependencies: ["MockDuck"])
     ]
 ```
 
