@@ -12,5 +12,12 @@ jobs:
       - checkout
 
       - run:
+          name: Reset Simulators
+          command: |
+              export LC_ALL=en_US.UTF-8
+              export LANG=en_US.UTF-8
+              fastlane snapshot reset_simulators --force
+
+      - run:
           name: Run Tests
           command: make test

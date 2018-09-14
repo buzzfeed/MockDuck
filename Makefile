@@ -2,7 +2,7 @@ test-ios:
 	set -o pipefail && \
 	xcodebuild test \
 		-scheme MockDuck \
-		-destination platform="iOS Simulator,name=iPad Pro (12.9-inch) (2nd generation),OS=12.0" \
+		-destination platform="iOS Simulator,name=iPhone X,OS=12.0" \
 		| xcpretty
 
 test-tvos:
@@ -15,4 +15,4 @@ test-tvos:
 test-macos:
 	swift test -Xswiftc "-target" -Xswiftc "x86_64-apple-macosx10.12"
 
-test: test-ios test-macos
+test: test-ios test-tvos test-macos
