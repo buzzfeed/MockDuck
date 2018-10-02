@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
   spec.source        = { :git => 'git@github.com:buzzfeed/MockDuck.git' }
   spec.source_files  = 'MockDuck/Sources/**/*.{h,m,swift}'
 
-  spec.swift_version = '4.0'
+  spec.swift_version = '4.2'
   spec.ios.deployment_target  = '10.0'
   spec.osx.deployment_target  = '10.12'
 
