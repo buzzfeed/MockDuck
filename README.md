@@ -43,7 +43,7 @@ You can now (or in a future launch of your app) tell MockDuck to use this record
 MockDuck.baseURL = URL(fileURLWithPath: "/tmp/MockDuckRecording")
 ```
 
-In this scenario, any request that is not found in your recording will cause MockDuck to fallback to the network. If you would rather that these requests simply fail, you can set `MockDuck.shouldFallbackToNetwork` to `false`. In this scenario, anyone who makes a network request that can not be handled by the recording will receive a `URLError` error with a `.NotConnectedToInternet` code.
+In this scenario, any request that is not found in your recording will cause MockDuck to fallback to the network. If you would rather that these requests simply fail, you can set `MockDuck.shouldFallbackToNetwork` to `false`. In this scenario, anyone who makes a network request that can not be handled by the recording will receive a `URLError` error with a `.notConnectedToInternet` code.
 
 One of the goals of MockDuck is to make the recordings as easy as possible for humans to read and modify. When it makes sense, the entire request and response are written as a single JSON file in the recording directory. If the response also includes an image, a text file, or a JSON file, that data will be stored in a separate file right next to the request/response JSON. If a different format of data is returned, that data will be Base64 encoded and written as a value in the JSON file. Any of these files can be modified however you like to alter the mocked response.
 
