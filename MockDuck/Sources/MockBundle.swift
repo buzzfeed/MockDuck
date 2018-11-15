@@ -10,11 +10,11 @@ import Foundation
 import os
 
 /// MockBundle is responsible for loading requests from disk and optionally persisting them when
-/// `recordURL` is set.
+/// `recordingURL` is set.
 final class MockBundle {
 
-    var baseURL: URL?
-    var recordURL: URL?
+    var loadingURL: URL?
+    var recordingURL: URL?
 
     init() {
     }
@@ -31,24 +31,24 @@ final class MockBundle {
         guard let fileName = SerializationUtils.fileName(for: .request(request)) else { return nil }
 
         var targetURL: URL?
-        var targetBaseURL: URL?
+        var targetLoadingURL: URL?
 
         if let response = checkRequestHandlers(for: request) {
             return MockRequestResponse(request: request, mockResponse: response)
         } else if
-            let inputURL = baseURL?.appendingPathComponent(fileName),
+            let inputURL = loadingURL?.appendingPathComponent(fileName),
             FileManager.default.fileExists(atPath: inputURL.path)
         {
             os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputURL.path)
             targetURL = inputURL
-            targetBaseURL = baseURL
+            targetLoadingURL = loadingURL
         } else if
-            let inputURL = recordURL?.appendingPathComponent(fileName),
+            let inputURL = recordingURL?.appendingPathComponent(fileName),
             FileManager.default.fileExists(atPath: inputURL.path)
         {
             os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputURL.path)
             targetURL = inputURL
-            targetBaseURL = recordURL
+            targetLoadingURL = recordingURL
         } else {
             os_log("Request %@ not found on disk. Expected file name: %@", log: MockDuck.log, type: .debug, "\(request)", fileName)
         }
@@ -56,7 +56,7 @@ final class MockBundle {
         var result: MockRequestResponse? = nil
         if
             let targetURL = targetURL,
-            let targetBaseURL = targetBaseURL
+            let targetLoadingURL = targetLoadingURL
         {
             let decoder = JSONDecoder()
             do {
@@ -67,14 +67,14 @@ final class MockBundle {
                 // Load the response data if the format is supported.
                 // This should be the same filename with a different extension.
                 if let dataFileName = SerializationUtils.fileName(for: .responseData(sequence, sequence)) {
-                    let dataURL = targetBaseURL.appendingPathComponent(dataFileName)
+                    let dataURL = targetLoadingURL.appendingPathComponent(dataFileName)
                     sequence.responseData = try Data(contentsOf: dataURL)
                 }
 
                 // Load the request body if the format is supported.
                 // This should be the same filename with a different extension.
                 if let bodyFileName = SerializationUtils.fileName(for: .requestBody(sequence)) {
-                    let bodyURL = targetBaseURL.appendingPathComponent(bodyFileName)
+                    let bodyURL = targetLoadingURL.appendingPathComponent(bodyFileName)
                     sequence.request.httpBody = try Data(contentsOf: bodyURL)
                 }
 
@@ -94,12 +94,12 @@ final class MockBundle {
     /// - Parameter requestResponse: MockRequestResponse containing the request, response, and data
     func record(requestResponse: MockRequestResponse) {
         guard
-            let recordURL = recordURL,
+            let recordingURL = recordingURL,
             let outputFileName =  SerializationUtils.fileName(for: .request(requestResponse))
             else { return }
 
         do {
-            let outputURL = recordURL.appendingPathComponent(outputFileName)
+            let outputURL = recordingURL.appendingPathComponent(outputFileName)
             try createOutputDirectory(url: outputURL)
 
             let encoder = JSONEncoder()
@@ -114,14 +114,14 @@ final class MockBundle {
                 // write out request body if the format is supported.
                 // This should be the same filename with a different extension.
                 if let requestBodyFileName = SerializationUtils.fileName(for: .requestBody(requestResponse)) {
-                    let requestBodyURL = recordURL.appendingPathComponent(requestBodyFileName)
+                    let requestBodyURL = recordingURL.appendingPathComponent(requestBodyFileName)
                     try requestResponse.request.httpBody?.write(to: requestBodyURL, options: [.atomic])
                 }
 
                 // write out response data if the format is supported.
                 // This should be the same filename with a different extension.
                 if let dataFileName = SerializationUtils.fileName(for: .responseData(requestResponse, requestResponse)) {
-                    let dataURL = recordURL.appendingPathComponent(dataFileName)
+                    let dataURL = recordingURL.appendingPathComponent(dataFileName)
                     try requestResponse.responseData?.write(to: dataURL, options: [.atomic])
                 }
 

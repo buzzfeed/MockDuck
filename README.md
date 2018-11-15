@@ -28,19 +28,19 @@ MockDuck also supports specifying the HTTP response headers, as well as JSON or 
 To begin capturing network activity in a MockDuck session, simply tell MockDuck where it should record requests and their responses:
 
 ```swift
-MockDuck.recordURL = URL(fileURLWithPath: "/tmp/MockDuckRecording")
+MockDuck.recordingURL = URL(fileURLWithPath: "/tmp/MockDuckRecording")
 ```
 
 And then when you want to stop recording:
 
 ```swift
-MockDuck.recordURL = nil
+MockDuck.recordingURL = nil
 ```
 
 You can now (or in a future launch of your app) tell MockDuck to use this recording to replay any matching requests:
 
 ```swift
-MockDuck.baseURL = URL(fileURLWithPath: "/tmp/MockDuckRecording")
+MockDuck.loadingURL = URL(fileURLWithPath: "/tmp/MockDuckRecording")
 ```
 
 In this scenario, any request that is not found in your recording will cause MockDuck to fallback to the network. If you would rather that these requests simply fail, you can set `MockDuck.shouldFallbackToNetwork` to `false`. In this scenario, anyone who makes a network request that can not be handled by the recording will receive a `URLError` error with a `.notConnectedToInternet` code.

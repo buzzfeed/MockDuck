@@ -10,8 +10,8 @@
 import XCTest
 
 class MockBundleTests: XCTestCase {
-    var baseURL: URL!
-    var recordURL: URL!
+    var loadingURL: URL!
+    var recordingURL: URL!
 
     override func setUp() {
         super.setUp()
@@ -25,14 +25,14 @@ class MockBundleTests: XCTestCase {
             .appendingPathComponent("TestBundle")
 
         MockDuck.shouldFallbackToNetwork = false
-        baseURL = bundleURL
-        recordURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("MockBundleTests")
+        loadingURL = bundleURL
+        recordingURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("MockBundleTests")
     }
 
     override func tearDown() {
-        try? FileManager.default.removeItem(at: recordURL)
-        MockDuck.baseURL = nil
-        MockDuck.recordURL = nil
+        try? FileManager.default.removeItem(at: recordingURL)
+        MockDuck.loadingURL = nil
+        MockDuck.recordingURL = nil
         super.tearDown()
     }
 
@@ -47,7 +47,7 @@ class MockBundleTests: XCTestCase {
         let response: HTTPURLResponse! = HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: nil, headerFields: [headerName: headerValue])
         let mockResponse = MockResponse(response: response, responseData: responseData)
         let requestResponse = MockRequestResponse(request: request, mockResponse: mockResponse)
-        MockDuck.recordURL = recordURL
+        MockDuck.recordingURL = recordingURL
         MockDuck.mockBundle.record(requestResponse: requestResponse)
         let loadedRequestResponse: MockRequestResponse! = MockDuck.mockBundle.loadRequestResponse(for: request)
         XCTAssertNotNil(loadedRequestResponse)
@@ -57,7 +57,7 @@ class MockBundleTests: XCTestCase {
     }
 
     func testLoadBundleBasic() {
-        MockDuck.baseURL = baseURL
+        MockDuck.loadingURL = loadingURL
 
         let taskExpectation = expectation(description: "url task")
         let url: URL! = URL(string: "https://www.buzzfeed.com/mother-of-dragons")
@@ -74,7 +74,7 @@ class MockBundleTests: XCTestCase {
     }
 
     func testLoadBundleData() {
-        MockDuck.baseURL = baseURL
+        MockDuck.loadingURL = loadingURL
 
         let taskExpectation = expectation(description: "url task")
         let url: URL! = URL(string: "https://www.buzzfeed.com/hodor")
@@ -91,7 +91,7 @@ class MockBundleTests: XCTestCase {
     }
 
     func testLoadBundleJSON() {
-        MockDuck.baseURL = baseURL
+        MockDuck.loadingURL = loadingURL
 
         let taskExpectation = expectation(description: "url task")
         let url: URL! = URL(string: "https://www.buzzfeed.com/septa-unella")
@@ -108,7 +108,7 @@ class MockBundleTests: XCTestCase {
     }
 
     func testLoadBundleImage() {
-        MockDuck.baseURL = baseURL
+        MockDuck.loadingURL = loadingURL
 
         let taskExpectation = expectation(description: "image download")
         let url: URL! = URL(string: "https://www.buzzfeed.com/logo.png")
