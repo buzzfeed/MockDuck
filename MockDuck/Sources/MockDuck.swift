@@ -47,7 +47,7 @@ public final class MockDuck {
     }
 
     /// By default, MockDuck is enabled, even though it does nothing until configured by setting
-    /// `baseURL`, `recordURL`, or by registering a request mock. This is here, however, to allow
+    /// `loadingURL`, `recordingURL`, or by registering a request mock. This is here, however, to allow
     /// developers to quickly disable MockDuck by setting this to `false`.
     public static var enabled = true {
         willSet {
@@ -56,7 +56,7 @@ public final class MockDuck {
     }
 
     /// By default, MockDuck will fallback to making a network request if the request can not be
-    /// loaded from `baseURL` or if the request can not be handled by a registered request mock.
+    /// loaded from `loadingURL` or if the request can not be handled by a registered request mock.
     /// Set this to `false` to force an error that resembles what `URLSession` provides when the
     /// network is unreachable.
     public static var shouldFallbackToNetwork = true {
@@ -79,15 +79,15 @@ public final class MockDuck {
 
     /// The location where MockDuck will attempt to look for network requests that have been saved
     /// to disk.
-    public static var baseURL: URL? {
+    public static var loadingURL: URL? {
         willSet {
             checkConfigureMockDuck()
         }
         didSet {
-            mockBundle.baseURL = baseURL
+            mockBundle.loadingURL = loadingURL
 
-            if let baseURL = baseURL {
-                os_log("Loading network requests from: %@", log: log, type: .info, baseURL.path)
+            if let loadingURL = loadingURL {
+                os_log("Loading network requests from: %@", log: log, type: .info, loadingURL.path)
             } else {
                 os_log("No longer loading network requests from disk", log: log, type: .info)
             }
@@ -96,16 +96,16 @@ public final class MockDuck {
 
     /// The location where MockDuck should attempt to save network requests that occur. This is a
     /// useful way to record a session of network activity to disk which is then used in the future
-    /// by pointing to this same data using `baseURL`.
-    public static var recordURL: URL? {
+    /// by pointing to this same data using `loadingURL`.
+    public static var recordingURL: URL? {
         willSet {
             checkConfigureMockDuck()
         }
         didSet {
-            mockBundle.recordURL = recordURL
+            mockBundle.recordingURL = recordingURL
 
-            if let recordURL = recordURL {
-                os_log("Recording network requests to: %@", log: log, type: .info, recordURL.path)
+            if let recordingURL = recordingURL {
+                os_log("Recording network requests to: %@", log: log, type: .info, recordingURL.path)
             } else {
                 os_log("No longer recording network requests", log: log, type: .info)
             }
