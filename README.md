@@ -103,6 +103,10 @@ Please note that on macOS MockDuck requires 10.12 or newer, so you will have to 
 
 MockDuck can also be integrated into your project manually by using git submodules. Once you have added your submodule, simply drag `MockDuck.xcodeproj` into your Xcode project or workspace and then have your target link against `MockDuck.framework`.
 
+## Code of Conduct
+
+Help us keep MockDuck open and inclusive. Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## Versioning
 
 We use [Semantic Versioning](http://semver.org/) for MockDuck releases. For the versions available, take a look at the [tags on this repository](https://github.com/buzzfeed/MockDuck/tags).
