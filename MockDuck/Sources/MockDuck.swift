@@ -99,7 +99,14 @@ public final class MockDuck {
     /// by pointing to this same data using `loadingURL`.
     public static var recordingURL: URL? {
         willSet {
-            checkConfigureMockDuck()
+            if
+                let newValue = newValue,
+                !newValue.isFileURL
+            {
+                assertionFailure("Invalid recordingURL: URL does not match file scheme")
+            } else {
+                checkConfigureMockDuck()
+            }
         }
         didSet {
             mockBundle.recordingURL = recordingURL
