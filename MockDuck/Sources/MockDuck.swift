@@ -104,9 +104,8 @@ public final class MockDuck {
                 !newValue.isFileURL
             {
                 assertionFailure("Invalid recordingURL: URL does not match file scheme")
-            } else {
-                checkConfigureMockDuck()
             }
+            checkConfigureMockDuck()
         }
         didSet {
             mockBundle.recordingURL = recordingURL
