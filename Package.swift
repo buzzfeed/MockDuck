@@ -4,6 +4,9 @@ import PackageDescription
 
 let package = Package(
     name: "MockDuck",
+    platforms: [
+        .macOS(.v10_12), .iOS(.v10), .tvOS(.v10)
+    ],
     products: [
         .library(
             name: "MockDuck",
