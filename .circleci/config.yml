@@ -14,3 +14,7 @@ jobs:
       - run:
           name: Run Tests
           command: make test
+
+      - run:
+          name: Lint Cocoapods
+          command: make lint-cocoapods

@@ -18,4 +18,7 @@ test-tvos: bootstrap
 test-macos: bootstrap
 	swift test -Xswiftc "-target" -Xswiftc "x86_64-apple-macosx10.12"
 
+lint-cocoapods: bootstrap
+	bundle exec pod lib lint
+
 test: test-ios test-tvos test-macos
