@@ -4,6 +4,11 @@ defaults: &defaults
   macos:
     xcode: "10.2.1"
 
+  environment:
+    BUNDLE_JOBS: 3
+    BUNDLE_RETRY: 3
+    BUNDLE_PATH: vendor/bundle
+
 jobs:
   build:
     <<: *defaults
