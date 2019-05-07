@@ -38,7 +38,7 @@ class MockBundleTests: XCTestCase {
 
     func testBasicRecordThenRead() {
         let statusCode = 530
-        let responseData = Data(bytes: [1, 2, 3, 4])
+        let responseData = Data([1, 2, 3, 4])
         let headerName = "X-BUZZFEED-TEST"
         let headerValue = "AMAZING"
 
