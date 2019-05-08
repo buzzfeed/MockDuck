@@ -62,7 +62,7 @@ class RequestHandlerTests: XCTestCase {
     }
 
     func testRequestHandlerData() {
-        let mockData = Data(bytes: [1, 5, 2, 4])
+        let mockData = Data([1, 5, 2, 4])
 
         MockDuck.registerRequestHandler { request in
             return try! MockResponse(for: request, data: mockData)

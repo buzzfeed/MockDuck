@@ -2,7 +2,12 @@ version: 2
 
 defaults: &defaults
   macos:
-    xcode: "10.0.0"
+    xcode: "10.2.1"
+
+  environment:
+    BUNDLE_JOBS: 3
+    BUNDLE_RETRY: 3
+    BUNDLE_PATH: vendor/bundle
 
 jobs:
   build:
@@ -12,12 +17,9 @@ jobs:
       - checkout
 
       - run:
-          name: Reset Simulators
-          command: |
-              export LC_ALL=en_US.UTF-8
-              export LANG=en_US.UTF-8
-              fastlane snapshot reset_simulators --force
-
-      - run:
           name: Run Tests
           command: make test
+
+      - run:
+          name: Lint Cocoapods
+          command: make lint-cocoapods

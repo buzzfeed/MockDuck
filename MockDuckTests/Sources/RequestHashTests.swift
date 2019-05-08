@@ -43,8 +43,8 @@ class RequestHashTests: XCTestCase {
         let url: URL! = URL(string: "https://www.buzzfeed.com/so-many-tests")
         var request1 = URLRequest(url: url)
         var request2 = URLRequest(url: url)
-        request1.httpBody = Data(bytes: [1, 2, 3, 4])
-        request2.httpBody = Data(bytes: [1, 2, 3, 6])
+        request1.httpBody = Data([1, 2, 3, 4])
+        request2.httpBody = Data([1, 2, 3, 6])
         XCTAssertNotEqual(request1.requestHash, request2.requestHash)
     }
 
@@ -74,8 +74,8 @@ class RequestHashTests: XCTestCase {
         let url2: URL! = URL(string: "https://www.buzzfeed.com/so-many-tests?foo=baz#utm_term=ouch")
         var request1 = URLRequest(url: url1)
         var request2 = URLRequest(url: url2)
-        request1.httpBody = Data(bytes: [1, 2, 3, 4])
-        request2.httpBody = Data(bytes: [4, 3, 2, 1])
+        request1.httpBody = Data([1, 2, 3, 4])
+        request2.httpBody = Data([4, 3, 2, 1])
         XCTAssertEqual(request1.requestHash, request2.requestHash)
     }
 }

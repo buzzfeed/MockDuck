@@ -10,7 +10,7 @@
 // https://help.apple.com/xcode/#/dev745c5c974
 
 SUPPORTED_PLATFORMS = iphonesimulator iphoneos appletvsimulator appletvos macosx
-VALID_ARCHS = arm64 armv7 armv7s i386 x86_64
+VALID_ARCHS = $(ARCHS_STANDARD)
 
 IPHONEOS_DEPLOYMENT_TARGET = 10.0
 MACOSX_DEPLOYMENT_TARGET = 10.12

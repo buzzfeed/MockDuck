@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		63335ED02281197D004DBB88 /* CryptoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63335ECF2281197D004DBB88 /* CryptoTests.swift */; };
 		637F1D562146E73800767EFF /* MockDuckTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637F1D552146E73800767EFF /* MockDuckTests.swift */; };
 		63C6D87921405F7600AA5700 /* SerializationUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C6D87821405F7600AA5700 /* SerializationUtils.swift */; };
 		63C6D87B21407BD700AA5700 /* RequestHashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C6D87A21407BD700AA5700 /* RequestHashTests.swift */; };
@@ -39,6 +40,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		63335ECF2281197D004DBB88 /* CryptoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoTests.swift; sourceTree = "<group>"; };
 		637F1D552146E73800767EFF /* MockDuckTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDuckTests.swift; sourceTree = "<group>"; };
 		63C6D87821405F7600AA5700 /* SerializationUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializationUtils.swift; sourceTree = "<group>"; };
 		63C6D87A21407BD700AA5700 /* RequestHashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestHashTests.swift; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 		7A65B59220603CCD0056B4BB /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				63335ECF2281197D004DBB88 /* CryptoTests.swift */,
 				63C6D87E2140853E00AA5700 /* MockBundleTests.swift */,
 				637F1D552146E73800767EFF /* MockDuckTests.swift */,
 				63C6D87C214080C800AA5700 /* MockURLProtocolTests.swift */,
@@ -268,12 +271,12 @@
 				TargetAttributes = {
 					7AA36C0720603C2700E6EF62 = {
 						CreatedOnToolsVersion = 9.2;
-						LastSwiftMigration = 1000;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 					7AA36C1020603C2700E6EF62 = {
 						CreatedOnToolsVersion = 9.2;
-						LastSwiftMigration = 1000;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -284,6 +287,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 7AA36BFE20603C2700E6EF62;
 			productRefGroup = 7AA36C0920603C2700E6EF62 /* Products */;
@@ -341,6 +345,7 @@
 				63C6D87F2140853E00AA5700 /* MockBundleTests.swift in Sources */,
 				637F1D562146E73800767EFF /* MockDuckTests.swift in Sources */,
 				7A65B59520603CCD0056B4BB /* RequestHandlerTests.swift in Sources */,
+				63335ED02281197D004DBB88 /* CryptoTests.swift in Sources */,
 				63C6D87D214080C800AA5700 /* MockURLProtocolTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -420,7 +425,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -482,7 +487,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -504,7 +509,7 @@
 				PRODUCT_NAME = MockDuck;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -522,7 +527,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.buzzfeed.MockDuck;
 				PRODUCT_NAME = MockDuck;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -533,7 +538,7 @@
 				INFOPLIST_FILE = MockDuckTests/Resources/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.buzzfeed.MockDuckTests;
 				PRODUCT_NAME = MockDuckTests;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -544,7 +549,7 @@
 				INFOPLIST_FILE = MockDuckTests/Resources/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.buzzfeed.MockDuckTests;
 				PRODUCT_NAME = MockDuckTests;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
