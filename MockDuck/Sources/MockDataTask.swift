@@ -31,7 +31,8 @@ final class MockDataTask: URLSessionDataTask {
 
     // On task execution, look for a saved request or kick off the fallback request.
     override func resume() {
-        if let sequence = MockDuck.mockBundle.loadRequestResponse(for: request) {
+        let hash = request.requestHash
+        if let sequence = MockDuck.mockBundle.loadRequestResponse(for: request, hash: hash) {
             // The request is found. Load the MockRequestResponse and call the completion/finish
             // with the stored data.
             completion(sequence, nil)
@@ -43,7 +44,7 @@ final class MockDataTask: URLSessionDataTask {
                     self.completion(nil, error)
                 } else if let response = response {
                     let requestResponse = MockRequestResponse(request: self.request, response: response, responseData: data)
-                    MockDuck.mockBundle.record(requestResponse: requestResponse)
+                    MockDuck.mockBundle.record(requestResponse: requestResponse, hash: hash)
                     self.completion(requestResponse, nil)
                 } else {
                     self.completion(nil, ErrorType.unknown)

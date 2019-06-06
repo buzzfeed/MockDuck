@@ -19,27 +19,27 @@ final class SerializationUtils {
 
     /// Used to determine the file name for a particular piece of data that we may want to
     /// serialize to or from disk.
-    static func fileName(for type: MockFileTarget) -> String? {
+    static func fileName(for type: MockFileTarget, hash: String) -> String? {
         var data: MockSerializableData
-        var hashValue: String
+        var hashValue: String = hash
         var componentSuffix: String = ""
         var baseName: String = ""
         var pathExtension: String?
 
         switch type {
         case .request(let request):
-            hashValue = request.requestHash
+//            hashValue = request.requestHash
             data = request.serializableRequest
             baseName = data.baseName
             pathExtension = "json"
         case .requestBody(let request):
-            hashValue = request.requestHash
+//            hashValue = request.requestHash
             data = request.serializableRequest
             baseName = data.baseName
             componentSuffix = "-request"
             pathExtension = data.dataSuffix
         case .responseData(let request, let response):
-            hashValue = response.requestHash
+//            hashValue = response.requestHash
             data = response.serializableResponse
             baseName = request.serializableRequest.baseName
             componentSuffix = "-response"

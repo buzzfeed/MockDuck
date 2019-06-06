@@ -20,7 +20,7 @@ public protocol MockDuckDelegate: class {
     ///
     /// - Parameter request: The request to normalize
     /// - Returns: The normalized request
-    func normalizedRequest(for request: URLRequest) -> URLRequest
+    func normalizedRequest(for request: URLRequest, forHashValue: Bool) -> URLRequest
 }
 
 /// Public-facing errors that MockDuck can throw.

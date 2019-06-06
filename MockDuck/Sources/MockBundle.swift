@@ -27,8 +27,11 @@ final class MockBundle {
     ///
     /// - Parameter request: URLRequest to attempt to load
     /// - Returns: The MockRequestResponse, if it can be loaded
-    func loadRequestResponse(for request: URLRequest) -> MockRequestResponse? {
-        guard let fileName = SerializationUtils.fileName(for: .request(request)) else { return nil }
+    func loadRequestResponse(for request: URLRequest, hash: String) -> MockRequestResponse? {
+        print("hash:::::::", hash)
+        guard let fileName = SerializationUtils.fileName(for: .request(request), hash: hash) else { return nil }
+
+        print("--------", #function, fileName)
 
         var targetURL: URL?
         var targetLoadingURL: URL?
@@ -66,14 +69,14 @@ final class MockBundle {
 
                 // Load the response data if the format is supported.
                 // This should be the same filename with a different extension.
-                if let dataFileName = SerializationUtils.fileName(for: .responseData(sequence, sequence)) {
+                if let dataFileName = SerializationUtils.fileName(for: .responseData(sequence, sequence), hash: hash) {
                     let dataURL = targetLoadingURL.appendingPathComponent(dataFileName)
                     sequence.responseData = try Data(contentsOf: dataURL)
                 }
 
                 // Load the request body if the format is supported.
                 // This should be the same filename with a different extension.
-                if let bodyFileName = SerializationUtils.fileName(for: .requestBody(sequence)) {
+                if let bodyFileName = SerializationUtils.fileName(for: .requestBody(sequence), hash: hash) {
                     let bodyURL = targetLoadingURL.appendingPathComponent(bodyFileName)
                     sequence.request.httpBody = try Data(contentsOf: bodyURL)
                 }
@@ -92,11 +95,13 @@ final class MockBundle {
     /// into a separate file that lives along side the recorded request.
     ///
     /// - Parameter requestResponse: MockRequestResponse containing the request, response, and data
-    func record(requestResponse: MockRequestResponse) {
+    func record(requestResponse: MockRequestResponse, hash: String) {
         guard
             let recordingURL = recordingURL,
-            let outputFileName =  SerializationUtils.fileName(for: .request(requestResponse))
+            let outputFileName =  SerializationUtils.fileName(for: .request(requestResponse), hash: hash)
             else { return }
+
+                print("--------", #function, outputFileName)
 
         do {
             let outputURL = recordingURL.appendingPathComponent(outputFileName)
@@ -113,14 +118,14 @@ final class MockBundle {
 
                 // write out request body if the format is supported.
                 // This should be the same filename with a different extension.
-                if let requestBodyFileName = SerializationUtils.fileName(for: .requestBody(requestResponse)) {
+                if let requestBodyFileName = SerializationUtils.fileName(for: .requestBody(requestResponse), hash: hash) {
                     let requestBodyURL = recordingURL.appendingPathComponent(requestBodyFileName)
                     try requestResponse.request.httpBody?.write(to: requestBodyURL, options: [.atomic])
                 }
 
                 // write out response data if the format is supported.
                 // This should be the same filename with a different extension.
-                if let dataFileName = SerializationUtils.fileName(for: .responseData(requestResponse, requestResponse)) {
+                if let dataFileName = SerializationUtils.fileName(for: .responseData(requestResponse, requestResponse), hash: hash) {
                     let dataURL = recordingURL.appendingPathComponent(dataFileName)
                     try requestResponse.responseData?.write(to: dataURL, options: [.atomic])
                 }
