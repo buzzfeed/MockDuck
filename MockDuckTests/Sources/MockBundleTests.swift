@@ -48,6 +48,7 @@ class MockBundleTests: XCTestCase {
         let mockResponse = MockResponse(response: response, responseData: responseData)
         let requestResponse = MockRequestResponse(request: request, mockResponse: mockResponse)
         MockDuck.recordingURL = recordingURL
+        MockDuck.loadingURL = recordingURL
         MockDuck.mockBundle.record(requestResponse: requestResponse)
         let loadedRequestResponse: MockRequestResponse! = MockDuck.mockBundle.loadRequestResponse(for: request)
         XCTAssertNotNil(loadedRequestResponse)

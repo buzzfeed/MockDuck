@@ -94,6 +94,19 @@ public final class MockDuck {
         }
     }
 
+    public static var repetitiveURLsList: [String: Int]? {
+
+        didSet {
+            mockBundle.repetitiveURLsList = repetitiveURLsList
+
+            if let repetitiveURLsList = repetitiveURLsList {
+                os_log("Setting list of repetitive requests to : %@", log: log, type: .info, repetitiveURLsList)
+            } else {
+                os_log("Setting list of repetitive requests to Null", log: log, type: .info)
+            }
+        }
+    }
+
     /// The location where MockDuck should attempt to save network requests that occur. This is a
     /// useful way to record a session of network activity to disk which is then used in the future
     /// by pointing to this same data using `loadingURL`.

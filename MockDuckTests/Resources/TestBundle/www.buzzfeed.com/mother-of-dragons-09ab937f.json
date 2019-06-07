@@ -1,0 +1,13 @@
+{
+  "request" : {
+      "url" : "https:\/\/www.buzzfeed.com\/mother-of-dragons",
+      "method" : "GET"
+  },
+  "response" : {
+      "headers" : {
+          "X-YOU-KNOW-NOTHING" : "Jon Snow"
+      },
+      "url" : "https:\/\/www.buzzfeed.com\/mother-of-dragons",
+      "status_code" : 207
+  }
+}

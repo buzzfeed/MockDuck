@@ -15,6 +15,7 @@ final class MockBundle {
 
     var loadingURL: URL?
     var recordingURL: URL?
+    var repetitiveURLsList: [String: Int]?
 
     init() {
     }
@@ -28,7 +29,9 @@ final class MockBundle {
     /// - Parameter request: URLRequest to attempt to load
     /// - Returns: The MockRequestResponse, if it can be loaded
     func loadRequestResponse(for request: URLRequest) -> MockRequestResponse? {
-        guard let fileName = SerializationUtils.fileName(for: .request(request)) else { return nil }
+        let hash = request.requestHash
+
+        guard let fileName = SerializationUtils.fileName(for: hash, type: .request(request)) else { return nil }
 
         var targetURL: URL?
         var targetLoadingURL: URL?
@@ -42,13 +45,6 @@ final class MockBundle {
             os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputURL.path)
             targetURL = inputURL
             targetLoadingURL = loadingURL
-        } else if
-            let inputURL = recordingURL?.appendingPathComponent(fileName),
-            FileManager.default.fileExists(atPath: inputURL.path)
-        {
-            os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputURL.path)
-            targetURL = inputURL
-            targetLoadingURL = recordingURL
         } else {
             os_log("Request %@ not found on disk. Expected file name: %@", log: MockDuck.log, type: .debug, "\(request)", fileName)
         }
@@ -66,14 +62,22 @@ final class MockBundle {
 
                 // Load the response data if the format is supported.
                 // This should be the same filename with a different extension.
-                if let dataFileName = SerializationUtils.fileName(for: .responseData(sequence, sequence)) {
+                if var dataFileName = SerializationUtils.fileName(for: hash, type: .responseData(sequence, sequence)) {
+
+                    if let url = request.url?.absoluteString,
+
+                        let hitCounter = repetitiveURLsList?[url] {
+                        dataFileName = SerializationUtils.prefix(dataFileName, withOrder: hitCounter)
+                        repetitiveURLsList?[url] = hitCounter + 1
+                    }
+
                     let dataURL = targetLoadingURL.appendingPathComponent(dataFileName)
                     sequence.responseData = try Data(contentsOf: dataURL)
                 }
 
                 // Load the request body if the format is supported.
                 // This should be the same filename with a different extension.
-                if let bodyFileName = SerializationUtils.fileName(for: .requestBody(sequence)) {
+                if let bodyFileName = SerializationUtils.fileName(for: hash, type: .requestBody(sequence)) {
                     let bodyURL = targetLoadingURL.appendingPathComponent(bodyFileName)
                     sequence.request.httpBody = try Data(contentsOf: bodyURL)
                 }
@@ -93,10 +97,12 @@ final class MockBundle {
     ///
     /// - Parameter requestResponse: MockRequestResponse containing the request, response, and data
     func record(requestResponse: MockRequestResponse) {
+
+        let hash = requestResponse.requestHash
         guard
             let recordingURL = recordingURL,
-            let outputFileName =  SerializationUtils.fileName(for: .request(requestResponse))
-            else { return }
+            let outputFileName =  SerializationUtils.fileName(for: hash, type: .request(requestResponse))
+        else { return }
 
         do {
             let outputURL = recordingURL.appendingPathComponent(outputFileName)
@@ -113,14 +119,21 @@ final class MockBundle {
 
                 // write out request body if the format is supported.
                 // This should be the same filename with a different extension.
-                if let requestBodyFileName = SerializationUtils.fileName(for: .requestBody(requestResponse)) {
+                if let requestBodyFileName = SerializationUtils.fileName(for: hash, type: .requestBody(requestResponse)) {
                     let requestBodyURL = recordingURL.appendingPathComponent(requestBodyFileName)
-                    try requestResponse.request.httpBody?.write(to: requestBodyURL, options: [.atomic])
+                    let body = requestResponse.request.httpBody ?? requestResponse.request.bodyStreamData
+                    try body?.write(to: requestBodyURL, options: [.atomic])
                 }
 
                 // write out response data if the format is supported.
                 // This should be the same filename with a different extension.
-                if let dataFileName = SerializationUtils.fileName(for: .responseData(requestResponse, requestResponse)) {
+                if var dataFileName = SerializationUtils.fileName(for: hash, type: .responseData(requestResponse, requestResponse)) {
+
+                    if let url = requestResponse.request.url?.absoluteString,
+                        let hitCounter = repetitiveURLsList?[url] {
+                        repetitiveURLsList?[url] = hitCounter + 1
+                        dataFileName = SerializationUtils.prefix(dataFileName, withOrder: hitCounter)
+                    }
                     let dataURL = recordingURL.appendingPathComponent(dataFileName)
                     try requestResponse.responseData?.write(to: dataURL, options: [.atomic])
                 }

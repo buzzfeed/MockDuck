@@ -78,12 +78,21 @@ private extension URLRequest {
 
         var hashData = Data()
 
-        if let urlData = normalizedRequest.url?.absoluteString.data(using: .utf8) {
+        var components = URLComponents(url: normalizedRequest.url!, resolvingAgainstBaseURL: false)
+        components?.queryItems?.sort(by: { (r, l) -> Bool in
+            return r.name > l.name
+        })
+
+        if let urlData = components?.string?.data(using: .utf8) {
             hashData.append(urlData)
         }
 
-        if let body = normalizedRequest.httpBody {
+        if let body = normalizedRequest.httpBody ?? normalizedRequest.bodyStreamData {
             hashData.append(body)
+        }
+
+        if let method = normalizedRequest.httpMethod?.data(using: .utf8) {
+            hashData.append(method)
         }
 
         if !hashData.isEmpty {
@@ -142,8 +151,39 @@ extension MockSerializableData {
             return "gif"
         } else if contentType.contains("application/json") {
             return "json"
+        } else if contentType.contains("application/x-www-form-urlencoded") {
+            return "txt"
         } else {
             return nil
         }
+    }
+}
+
+extension URLRequest {
+
+    var bodyStreamData: Data? {
+
+        guard let bodyStream = self.httpBodyStream else { return nil }
+
+        bodyStream.open()
+
+        // Will read 16 chars per iteration. Can use bigger buffer if needed
+        let bufferSize: Int = 16
+
+        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+
+        var dat = Data()
+
+        while bodyStream.hasBytesAvailable {
+
+            let readDat = bodyStream.read(buffer, maxLength: bufferSize)
+            dat.append(buffer, count: readDat)
+        }
+
+        buffer.deallocate()
+
+        bodyStream.close()
+
+        return dat
     }
 }
