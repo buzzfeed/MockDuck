@@ -28,10 +28,7 @@ final class MockBundle {
     /// - Parameter request: URLRequest to attempt to load
     /// - Returns: The MockRequestResponse, if it can be loaded
     func loadRequestResponse(for request: URLRequest, hash: String) -> MockRequestResponse? {
-        print("hash:::::::", hash)
         guard let fileName = SerializationUtils.fileName(for: .request(request), hash: hash) else { return nil }
-
-        print("--------", #function, fileName)
 
         var targetURL: URL?
         var targetLoadingURL: URL?
@@ -69,14 +66,14 @@ final class MockBundle {
 
                 // Load the response data if the format is supported.
                 // This should be the same filename with a different extension.
-                if let dataFileName = SerializationUtils.fileName(for: .responseData(sequence, sequence), hash: hash) {
+                if let dataFileName = SerializationUtils.fileName(for: .responseData(request, sequence), hash: hash) {
                     let dataURL = targetLoadingURL.appendingPathComponent(dataFileName)
                     sequence.responseData = try Data(contentsOf: dataURL)
                 }
 
                 // Load the request body if the format is supported.
                 // This should be the same filename with a different extension.
-                if let bodyFileName = SerializationUtils.fileName(for: .requestBody(sequence), hash: hash) {
+                if let bodyFileName = SerializationUtils.fileName(for: .requestBody(request), hash: hash) {
                     let bodyURL = targetLoadingURL.appendingPathComponent(bodyFileName)
                     sequence.request.httpBody = try Data(contentsOf: bodyURL)
                 }
@@ -101,8 +98,6 @@ final class MockBundle {
             let outputFileName =  SerializationUtils.fileName(for: .request(requestResponse), hash: hash)
             else { return }
 
-                print("--------", #function, outputFileName)
-
         do {
             let outputURL = recordingURL.appendingPathComponent(outputFileName)
             try createOutputDirectory(url: outputURL)
@@ -120,7 +115,9 @@ final class MockBundle {
                 // This should be the same filename with a different extension.
                 if let requestBodyFileName = SerializationUtils.fileName(for: .requestBody(requestResponse), hash: hash) {
                     let requestBodyURL = recordingURL.appendingPathComponent(requestBodyFileName)
-                    try requestResponse.request.httpBody?.write(to: requestBodyURL, options: [.atomic])
+
+                    let data = requestResponse.request.httpBody ?? requestResponse.request.bodySteamData
+                    try data?.write(to: requestBodyURL, options: [.atomic])
                 }
 
                 // write out response data if the format is supported.
@@ -175,5 +172,34 @@ final class MockBundle {
                                             withIntermediateDirectories: true,
                                             attributes: nil)
         }
+    }
+}
+
+private extension URLRequest {
+
+    var bodySteamData: Data? {
+
+        guard let bodyStream = self.httpBodyStream else { return nil }
+
+        bodyStream.open()
+
+        // Will read 16 chars per iteration. Can use bigger buffer if needed
+        let bufferSize: Int = 16
+
+        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+
+        var dat = Data()
+
+        while bodyStream.hasBytesAvailable {
+
+            let readDat = bodyStream.read(buffer, maxLength: bufferSize)
+            dat.append(buffer, count: readDat)
+        }
+
+        buffer.deallocate()
+
+        bodyStream.close()
+
+        return dat
     }
 }

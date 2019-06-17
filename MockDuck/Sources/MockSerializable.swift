@@ -73,8 +73,13 @@ extension MockRequestResponse: HashableMockData {
 
 // This is the file name hash value that all of the serialization uses.
 private extension URLRequest {
+
+    var normalizedRequestFromURLProtocol: URLRequest? {
+        return (URLProtocol.property(forKey: "normalizedRequest", in: self) as? URLRequest)
+    }
+
     var serializedHashValue: String {
-        let normalizedRequest = MockDuck.delegate?.normalizedRequest(for: self, forHashValue: true) ?? self
+        let normalizedRequest = normalizedRequestFromURLProtocol ?? self
 
         var hashData = Data()
 
@@ -95,6 +100,11 @@ private extension URLRequest {
 }
 
 extension URLRequest: MockSerializableData {
+
+    var normalizedURL: URL? {
+        return normalizedRequestFromURLProtocol?.url
+    }
+
     var headers: [String: String]? {
         return allHTTPHeaderFields
     }
@@ -105,6 +115,7 @@ extension URLRequest: MockSerializableData {
 }
 
 extension URLResponse: MockSerializableData {
+    
     var headers: [String: String]? {
         guard let httpResponse = self as? HTTPURLResponse else { return nil }
         return httpResponse.allHeaderFields as? [String: String]
@@ -113,22 +124,22 @@ extension URLResponse: MockSerializableData {
     var contentType: String? {
         return headers?["Content-Type"] ?? mimeType
     }
+
+    var normalizedURL: URL? {
+        return url
+    }
 }
 
 extension MockSerializableData {
     var baseName: String {
         get {
-            guard var name = normalizedURL?.host else { return "request" }
-            if let path = normalizedURL?.path, path.count > 0 {
+            let url = self.normalizedURL
+            guard var name = url?.host else { return "request" }
+            if let path = url?.path, path.count > 0 {
                 name = name.appending(path)
             }
             return name
         }
-    }
-
-    var normalizedURL: URL? {
-        guard let url = url else { return nil }
-        return MockDuck.delegate?.normalizedRequest(for: URLRequest(url: url), forHashValue: false).url ?? url
     }
 
     var dataSuffix: String? {

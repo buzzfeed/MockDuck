@@ -48,6 +48,9 @@ class MockURLProtocol: URLProtocol, URLSessionDelegate, URLSessionDataDelegate {
         // it's already been handled once, bail out in the 'canInit' method.
         URLProtocol.setProperty(true, forKey: Constants.ProtocolHandled, in: newRequest)
 
+        let normalizedRequest = MockDuck.delegate?.normalizedRequest(for: request) ?? request
+        URLProtocol.setProperty(normalizedRequest, forKey: "normalizedRequest", in: newRequest)
+
         // Complete the request using our `MockSession`. On completion, call all the necessary
         // URLClient methods to communicate the results back to the caller.
         sessionTask = MockDuck.mockSession.dataTask(
