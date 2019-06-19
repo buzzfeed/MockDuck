@@ -31,20 +31,22 @@ final class MockDataTask: URLSessionDataTask {
 
     // On task execution, look for a saved request or kick off the fallback request.
     override func resume() {
-        if let sequence = MockDuck.mockBundle.loadRequestResponse(for: request) {
+        let mockRequestResponse = MockRequestResponse(request: request)
+
+        if MockDuck.mockBundle.loadResponse(for: mockRequestResponse) {
             // The request is found. Load the MockRequestResponse and call the completion/finish
-            // with the stored data.
-            completion(sequence, nil)
+            // with the updated data.
+            completion(mockRequestResponse, nil)
         } else if MockDuck.shouldFallbackToNetwork {
             // The request isn't found but we should fallback to the network. Kick off a task with
             // the fallback URLSession.
-            fallbackTask = MockDuck.fallbackSession.dataTask(with: request, completionHandler: { data, response, error in
+            fallbackTask = MockDuck.fallbackSession.dataTask(with: request, completionHandler: { responseData, response, error in
                 if let error = error {
                     self.completion(nil, error)
                 } else if let response = response {
-                    let requestResponse = MockRequestResponse(request: self.request, response: response, responseData: data)
-                    MockDuck.mockBundle.record(requestResponse: requestResponse)
-                    self.completion(requestResponse, nil)
+                    mockRequestResponse.responseWrapper = MockResponse(response: response, responseData: responseData)
+                    MockDuck.mockBundle.record(requestResponse: mockRequestResponse)
+                    self.completion(mockRequestResponse, nil)
                 } else {
                     self.completion(nil, ErrorType.unknown)
                 }

@@ -13,6 +13,26 @@ import Foundation
 final class MockRequest {
     var request: URLRequest
 
+    private(set) lazy var normalizedRequest: URLRequest = {
+        return MockDuck.delegate?.normalizedRequest(for: request) ?? request
+    }()
+
+    var serializedHashValue: String {
+        let normalizedRequest = self.normalizedRequest
+
+        var hashData = Data()
+
+        if let urlData = normalizedRequest.url?.absoluteString.data(using: .utf8) {
+            hashData.append(urlData)
+        }
+
+        if let body = normalizedRequest.httpBody {
+            hashData.append(body)
+        }
+
+        return !hashData.isEmpty ? String(CryptoUtils.md5(hashData).prefix(8)) : ""
+    }
+
     init(request: URLRequest) {
         self.request = request
     }

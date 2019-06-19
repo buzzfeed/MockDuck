@@ -18,25 +18,25 @@ class RequestHashTests: XCTestCase {
     func testSameRequestSameHash() {
         let url1: URL! = URL(string: "https://www.buzzfeed.com/so-many-tests?foo=bar")
         let url2: URL! = URL(string: "https://www.buzzfeed.com/so-many-tests?foo=bar")
-        let request1 = URLRequest(url: url1)
-        let request2 = URLRequest(url: url2)
-        XCTAssertEqual(request1.requestHash, request2.requestHash)
+        let request1 = MockRequestResponse(request: URLRequest(url: url1))
+        let request2 = MockRequestResponse(request: URLRequest(url: url2))
+        XCTAssertEqual(request1.serializedHashValue, request2.serializedHashValue)
     }
 
     func testDifferentQueryDifferentHash() {
         let url1: URL! = URL(string: "https://www.buzzfeed.com/so-many-tests?foo=bar")
         let url2: URL! = URL(string: "https://www.buzzfeed.com/so-many-tests?foo=baz")
-        let request1 = URLRequest(url: url1)
-        let request2 = URLRequest(url: url2)
-        XCTAssertNotEqual(request1.requestHash, request2.requestHash)
+        let request1 = MockRequestResponse(request: URLRequest(url: url1))
+        let request2 = MockRequestResponse(request: URLRequest(url: url2))
+        XCTAssertNotEqual(request1.serializedHashValue, request2.serializedHashValue)
     }
 
     func testDifferentFragmentDifferentHash() {
         let url1: URL! = URL(string: "https://www.buzzfeed.com/so-many-tests#utm_term=ugh")
         let url2: URL! = URL(string: "https://www.buzzfeed.com/so-many-tests#utm_term=ouch")
-        let request1 = URLRequest(url: url1)
-        let request2 = URLRequest(url: url2)
-        XCTAssertNotEqual(request1.requestHash, request2.requestHash)
+        let request1 = MockRequestResponse(request: URLRequest(url: url1))
+        let request2 = MockRequestResponse(request: URLRequest(url: url2))
+        XCTAssertNotEqual(request1.serializedHashValue, request2.serializedHashValue)
     }
 
     func testDifferentBodyDifferentHash() {
@@ -45,7 +45,9 @@ class RequestHashTests: XCTestCase {
         var request2 = URLRequest(url: url)
         request1.httpBody = Data([1, 2, 3, 4])
         request2.httpBody = Data([1, 2, 3, 6])
-        XCTAssertNotEqual(request1.requestHash, request2.requestHash)
+        let mockRequest1 = MockRequestResponse(request: request1)
+        let mockRequest2 = MockRequestResponse(request: request2)
+        XCTAssertNotEqual(mockRequest1.serializedHashValue, mockRequest2.serializedHashValue)
     }
 
     func testNormalizedRequestsSameHash() {
@@ -76,6 +78,8 @@ class RequestHashTests: XCTestCase {
         var request2 = URLRequest(url: url2)
         request1.httpBody = Data([1, 2, 3, 4])
         request2.httpBody = Data([4, 3, 2, 1])
-        XCTAssertEqual(request1.requestHash, request2.requestHash)
+        let mockRequest1 = MockRequestResponse(request: request1)
+        let mockRequest2 = MockRequestResponse(request: request2)
+        XCTAssertEqual(mockRequest1.serializedHashValue, mockRequest2.serializedHashValue)
     }
 }

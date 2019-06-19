@@ -49,11 +49,12 @@ class MockBundleTests: XCTestCase {
         let requestResponse = MockRequestResponse(request: request, mockResponse: mockResponse)
         MockDuck.recordingURL = recordingURL
         MockDuck.mockBundle.record(requestResponse: requestResponse)
-        let loadedRequestResponse: MockRequestResponse! = MockDuck.mockBundle.loadRequestResponse(for: request)
-        XCTAssertNotNil(loadedRequestResponse)
-        XCTAssertEqual((loadedRequestResponse.response as! HTTPURLResponse).statusCode, statusCode)
-        XCTAssertEqual(loadedRequestResponse.responseData, responseData)
-        XCTAssertEqual(loadedRequestResponse.response.headers?[headerName], headerValue)
+        let mockRequestResponse = MockRequestResponse(request: request)
+        XCTAssertTrue(MockDuck.mockBundle.loadResponse(for: mockRequestResponse))
+        XCTAssertNotNil(mockRequestResponse.response)
+        XCTAssertEqual((mockRequestResponse.response as! HTTPURLResponse).statusCode, statusCode)
+        XCTAssertEqual(mockRequestResponse.responseData, responseData)
+        XCTAssertEqual(mockRequestResponse.response?.headers?[headerName], headerValue)
     }
 
     func testLoadBundleBasic() {
