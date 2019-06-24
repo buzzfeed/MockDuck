@@ -88,7 +88,14 @@ private extension URLRequest {
         }
 
         if let body = normalizedRequest.httpBody ?? normalizedRequest.bodyStreamData {
+
+            if let json = try? JSONSerialization.jsonObject(with: body, options: []) as! [String: Any]{
+
+                hashData.append(sort(dictionary: json).data(using: .utf8)!)
+
+            } else {
             hashData.append(body)
+            }
         }
 
         if let method = normalizedRequest.httpMethod?.data(using: .utf8) {
@@ -101,6 +108,18 @@ private extension URLRequest {
             return ""
         }
     }
+}
+
+
+func sort(dictionary: [String: Any]) -> String {
+    let sorted = dictionary.keys.sorted().reduce("") { (acc, iteration) -> String in
+        if let json = dictionary[iteration] as? [String: Any] {
+            return acc.appending("\(iteration):\(sort(dictionary: json)),")
+        } else {
+            return acc.appending("\(iteration):\(dictionary[iteration]!),")
+        }
+    }
+    return String(sorted.dropLast())
 }
 
 extension URLRequest: MockSerializableData {
@@ -181,9 +200,7 @@ extension URLRequest {
         }
 
         buffer.deallocate()
-
         bodyStream.close()
-
         return dat
     }
 }
