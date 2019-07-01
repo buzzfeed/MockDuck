@@ -27,14 +27,16 @@ final class MockBundle {
     ///
     /// - Parameter request: URLRequest to attempt to load
     /// - Returns: The MockRequestResponse, if it can be loaded
-    func loadRequestResponse(for request: URLRequest) -> MockRequestResponse? {
-        guard let fileName = SerializationUtils.fileName(for: .request(request)) else { return nil }
+    func loadResponse(for requestResponse: MockRequestResponse) -> Bool {
+        guard let fileName = requestResponse.fileName(for: .request) else { return false }
 
         var targetURL: URL?
         var targetLoadingURL: URL?
+        let request = requestResponse.request
 
         if let response = checkRequestHandlers(for: request) {
-            return MockRequestResponse(request: request, mockResponse: response)
+            requestResponse.responseWrapper = response
+            return true
         } else if
             let inputURL = loadingURL?.appendingPathComponent(fileName),
             FileManager.default.fileExists(atPath: inputURL.path)
@@ -53,38 +55,32 @@ final class MockBundle {
             os_log("Request %@ not found on disk. Expected file name: %@", log: MockDuck.log, type: .debug, "\(request)", fileName)
         }
 
-        var result: MockRequestResponse? = nil
         if
             let targetURL = targetURL,
             let targetLoadingURL = targetLoadingURL
         {
             let decoder = JSONDecoder()
+
             do {
                 let data = try Data(contentsOf: targetURL)
 
-                let sequence: MockRequestResponse = try decoder.decode(MockRequestResponse.self, from: data)
+                let loaded = try decoder.decode(MockRequestResponse.self, from: data)
+                requestResponse.responseWrapper = loaded.responseWrapper
 
                 // Load the response data if the format is supported.
                 // This should be the same filename with a different extension.
-                if let dataFileName = SerializationUtils.fileName(for: .responseData(sequence, sequence)) {
+                if let dataFileName = requestResponse.fileName(for: .responseData) {
                     let dataURL = targetLoadingURL.appendingPathComponent(dataFileName)
-                    sequence.responseData = try Data(contentsOf: dataURL)
+                    requestResponse.responseData = try Data(contentsOf: dataURL)
                 }
 
-                // Load the request body if the format is supported.
-                // This should be the same filename with a different extension.
-                if let bodyFileName = SerializationUtils.fileName(for: .requestBody(sequence)) {
-                    let bodyURL = targetLoadingURL.appendingPathComponent(bodyFileName)
-                    sequence.request.httpBody = try Data(contentsOf: bodyURL)
-                }
-
-                result = sequence
+                return true
             } catch {
                 os_log("Error decoding JSON: %@", log: MockDuck.log, type: .error, "\(error)")
             }
         }
 
-        return result
+        return false
     }
 
     /// If recording is enabled, this method saves the request to the filesystem. If the request
@@ -95,7 +91,7 @@ final class MockBundle {
     func record(requestResponse: MockRequestResponse) {
         guard
             let recordingURL = recordingURL,
-            let outputFileName =  SerializationUtils.fileName(for: .request(requestResponse))
+            let outputFileName = requestResponse.fileName(for: .request)
             else { return }
 
         do {
@@ -113,14 +109,14 @@ final class MockBundle {
 
                 // write out request body if the format is supported.
                 // This should be the same filename with a different extension.
-                if let requestBodyFileName = SerializationUtils.fileName(for: .requestBody(requestResponse)) {
+                if let requestBodyFileName = requestResponse.fileName(for: .requestBody) {
                     let requestBodyURL = recordingURL.appendingPathComponent(requestBodyFileName)
                     try requestResponse.request.httpBody?.write(to: requestBodyURL, options: [.atomic])
                 }
 
                 // write out response data if the format is supported.
                 // This should be the same filename with a different extension.
-                if let dataFileName = SerializationUtils.fileName(for: .responseData(requestResponse, requestResponse)) {
+                if let dataFileName = requestResponse.fileName(for: .responseData) {
                     let dataURL = recordingURL.appendingPathComponent(dataFileName)
                     try requestResponse.responseData?.write(to: dataURL, options: [.atomic])
                 }

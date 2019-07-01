@@ -12,7 +12,7 @@ import Foundation
 /// stub out the responses. One of these is instantiated per request.
 class MockURLProtocol: URLProtocol, URLSessionDelegate, URLSessionDataDelegate {
     private struct Constants {
-        static let ProtocolHandled = "MockURLProtocolHandled"
+        static let ProtocolHandled = "com.buzzfeed.MockDuck.URLProtocolHandled"
     }
 
     var sessionTask: URLSessionTask?
@@ -68,6 +68,7 @@ class MockURLProtocol: URLProtocol, URLSessionDelegate, URLSessionDataDelegate {
                 }
             }
         )
+
         sessionTask?.resume()
     }
 
@@ -75,4 +76,4 @@ class MockURLProtocol: URLProtocol, URLSessionDelegate, URLSessionDataDelegate {
         sessionTask?.cancel()
         sessionTask = nil
     }
- }
+}
