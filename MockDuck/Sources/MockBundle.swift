@@ -111,7 +111,8 @@ final class MockBundle {
                 // This should be the same filename with a different extension.
                 if let requestBodyFileName = requestResponse.fileName(for: .requestBody) {
                     let requestBodyURL = recordingURL.appendingPathComponent(requestBodyFileName)
-                    try requestResponse.request.httpBody?.write(to: requestBodyURL, options: [.atomic])
+                    let body = requestResponse.request.httpBody ?? requestResponse.request.httpBodyStreamData
+                    try body?.write(to: requestBodyURL, options: [.atomic])
                 }
 
                 // write out response data if the format is supported.
