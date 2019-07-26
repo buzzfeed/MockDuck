@@ -50,4 +50,22 @@ extension URLRequest: RequestResponseCommonProtocol {
     var contentType: String? {
         return headers?["Content-Type"]
     }
+    
+    var httpBodyStreamData: Data? {
+            
+        guard let bodyStream = self.httpBodyStream else { return nil }
+        bodyStream.open()
+        let bufferSize: Int = 1024
+        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+        var dat = Data()
+        
+        while bodyStream.hasBytesAvailable {
+            let readDat = bodyStream.read(buffer, maxLength: bufferSize)
+            dat.append(buffer, count: readDat)
+        }
+        
+        buffer.deallocate()
+        bodyStream.close()
+        return dat
+    }
 }
