@@ -25,6 +25,12 @@ extension RequestResponseCommonProtocol {
             return "gif"
         } else if contentType.contains("application/json") {
             return "json"
+        } else if contentType.contains("application/x-www-form-urlencoded") {
+            return "txt"
+        } else if contentType.hasPrefix("text/") {
+            var newContentType = contentType
+            newContentType.removeFirst("text/".count)
+            return newContentType
         } else {
             return nil
         }
