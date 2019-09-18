@@ -107,6 +107,10 @@ final class MockRequestResponse: Codable, CustomDebugStringConvertible {
             hashData.append(body)
         }
 
+        if let bodyData = normalizedRequest.httpBodyStreamData {
+            hashData.append(bodyData)
+        }
+
         if !hashData.isEmpty {
             return String(CryptoUtils.md5(hashData).prefix(8))
         } else {
