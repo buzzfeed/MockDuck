@@ -135,6 +135,18 @@ public final class MockDuck {
     public static func unregisterAllRequestHandlers() {
         mockBundle.unregisterAllRequestHandlers()
     }
+    
+    // MARK: - Fetching Response Objects
+    
+    /// Takes a passed in hostname and returns all the recorded mocks for that URL.
+    /// If an empty string is passed in, all recordings will be returned.
+    ///
+    /// - Parameter hostname: String representing the hostname to load requests from.
+    /// - Returns: An array of MockRequestResponse for each request under that domain
+    public static func getResponses(for hostname: String) -> [MockRequestResponse] {
+        checkConfigureMockDuck()
+        return mockBundle.getResponses(for: hostname)
+    }
 
     // MARK: - Internal Use Only
 
