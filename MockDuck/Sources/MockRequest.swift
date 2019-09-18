@@ -10,7 +10,7 @@ import Foundation
 
 /// A very basic wrapper around URLRequest that allows us to read and write this data to disk
 /// using Codable without having to make URLRequest itself conform to Codable.
-final class MockRequest {
+final class MockRequest: CustomDebugStringConvertible {
     var request: URLRequest
 
     private(set) lazy var normalizedRequest: URLRequest = {
@@ -19,6 +19,10 @@ final class MockRequest {
 
     init(request: URLRequest) {
         self.request = request
+    }
+    
+    public var debugDescription: String {
+        return "\(request.httpMethod ?? "GET") \(request.url?.absoluteString ?? "")"
     }
 }
 

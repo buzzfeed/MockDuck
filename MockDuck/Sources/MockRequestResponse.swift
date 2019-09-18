@@ -9,7 +9,7 @@
 import Foundation
 
 /// A basic container for holding a request, a response, and any associated data.
-final class MockRequestResponse: Codable {
+final class MockRequestResponse: Codable, CustomDebugStringConvertible {
 
     enum MockFileTarget {
         case request
@@ -140,5 +140,28 @@ final class MockRequestResponse: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         requestWrapper = try container.decode(MockRequest.self, forKey: .requestWrapper)
         responseWrapper = try container.decodeIfPresent(MockResponse.self, forKey: .responseWrapper)
+    }
+    
+    // MARK: Debug
+    
+    public var debugDescription: String {
+        var result = "\n"
+        
+        if let request = fileName(for: .request) {
+            result.append("Request: \(request)\n")
+            result.append("\t\(requestWrapper)\n")
+        }
+        if let requestBody = fileName(for: .requestBody) {
+            result.append("Request Body: \(requestBody)\n")
+        }
+        if let responseData = fileName(for: .responseData) {
+            result.append("Response Data: \(responseData)\n")
+                
+            if let response = responseWrapper {
+                result.append("\t\(response)\n")
+            }
+        }
+
+        return result
     }
 }
