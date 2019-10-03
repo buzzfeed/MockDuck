@@ -1,11 +1,11 @@
 Pod::Spec.new do |spec|
   spec.name          = 'MockDuck'
-  spec.version       = '1.0'
+  spec.version       = '1.1'
   spec.license       = { :type => 'MIT', :file => 'LICENSE' }
   spec.summary       = 'A network mocking layer for iOS and macOS'
   spec.homepage      = 'https://github.com/buzzfeed/MockDuck'
   spec.author        = 'BuzzFeed'
-  spec.source        = { :git => 'https://github.com/buzzfeed/MockDuck.git', :tag => '1.0' }
+  spec.source        = { :git => 'https://github.com/buzzfeed/MockDuck.git', :tag => '1.1' }
   spec.source_files  = 'MockDuck/Sources/**/*.{h,m,swift}'
 
   spec.swift_version = '5.0'
