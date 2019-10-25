@@ -21,6 +21,7 @@ public protocol MockDuckDelegate: class {
     /// - Parameter request: The request to normalize
     /// - Returns: The normalized request
     func normalizedRequest(for request: URLRequest) -> URLRequest
+    func didLog(_ message: String, log: OSLog, type: OSLogType)
 }
 
 /// Public-facing errors that MockDuck can throw.
@@ -87,9 +88,10 @@ public final class MockDuck {
             mockBundle.loadingURL = loadingURL
 
             if let loadingURL = loadingURL {
-                os_log("Loading network requests from: %@", log: log, type: .info, loadingURL.path)
+
+                MockDuck.log(String(format: "Loading network requests from: %@", loadingURL.path), type: .info)
             } else {
-                os_log("No longer loading network requests from disk", log: log, type: .info)
+                MockDuck.log("No longer loading network requests from disk", type: .info)
             }
         }
     }
@@ -105,9 +107,9 @@ public final class MockDuck {
             mockBundle.recordingURL = recordingURL
 
             if let recordingURL = recordingURL {
-                os_log("Recording network requests to: %@", log: log, type: .info, recordingURL.path)
+                MockDuck.log(String(format: "Recording network requests to: %@", recordingURL.path), type: .info)
             } else {
-                os_log("No longer recording network requests", log: log, type: .info)
+                MockDuck.log("No longer recording network requests", type: .info)
             }
         }
     }
@@ -139,7 +141,7 @@ public final class MockDuck {
     // MARK: - Internal Use Only
 
     /// MockDuck uses this to log all of its messages.
-    internal static let log = OSLog(subsystem: "com.buzzfeed.MockDuck", category: "default")
+    internal static let defaultLog = OSLog(subsystem: "com.buzzfeed.MockDuck", category: "default")
 
     /// This is the session MockDuck will fallback to using if the mocked request is not found and
     /// if `MockDuck.shouldFallbackToNetwork` is `true`.
@@ -207,6 +209,15 @@ public final class MockDuck {
         protocolClasses.insert(MockURLProtocol.self, at: 0)
         configuration.protocolClasses = protocolClasses
     }
+
+    // MARK: - Logging
+
+    static func log(_ message: String, log: OSLog = MockDuck.defaultLog, type: OSLogType = .default) {
+//        os_log(message, log: log, type: type, args)
+
+        delegate?.didLog(message, log: log, type: type)
+    }
+
 }
 
 extension URLSessionConfiguration {

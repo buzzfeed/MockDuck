@@ -41,18 +41,18 @@ final class MockBundle {
             let inputURL = loadingURL?.appendingPathComponent(fileName),
             FileManager.default.fileExists(atPath: inputURL.path)
         {
-            os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputURL.path)
+            MockDuck.log(String(format: "Loading request %@ from: %@", "\(request)", inputURL.path), type: .debug)
             targetURL = inputURL
             targetLoadingURL = loadingURL
         } else if
             let inputURL = recordingURL?.appendingPathComponent(fileName),
             FileManager.default.fileExists(atPath: inputURL.path)
         {
-            os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputURL.path)
+            MockDuck.log(String(format: "Loading request %@ from: %@", "\(request)", inputURL.path), type: .debug)
             targetURL = inputURL
             targetLoadingURL = recordingURL
         } else {
-            os_log("Request %@ not found on disk. Expected file name: %@", log: MockDuck.log, type: .debug, "\(request)", fileName)
+            MockDuck.log(String(format: "Request %@ not found on disk. Expected file name: %@", "\(request)", fileName), type: .debug)
         }
 
         if
@@ -76,7 +76,7 @@ final class MockBundle {
 
                 return true
             } catch {
-                os_log("Error decoding JSON: %@", log: MockDuck.log, type: .error, "\(error)")
+                MockDuck.log(String(format: "Error decoding JSON: %@", "\(error)"), type: .error)
             }
         }
 
@@ -122,12 +122,12 @@ final class MockBundle {
                     try requestResponse.responseData?.write(to: dataURL, options: [.atomic])
                 }
 
-                os_log("Persisted network request to: %@", log: MockDuck.log, type: .debug, outputURL.path)
+                MockDuck.log(String(format: "Persisted network request to: %@", outputURL.path), type: .debug)
             } else {
-                os_log("Failed to persist request for: %@", log: MockDuck.log, type: .error, "\(requestResponse)")
+                MockDuck.log(String(format: "Failed to persist request for: %@", "\(requestResponse)"), type: .error)
             }
         } catch {
-            os_log("Failed to persist request: %@", log: MockDuck.log, type: .error, "\(error)")
+            MockDuck.log(String(format: "Failed to persist request: %@", "\(error)"), type: .error)
         }
     }
 
