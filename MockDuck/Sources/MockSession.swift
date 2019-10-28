@@ -20,9 +20,14 @@ final class MockSession: URLSession {
     {
         let task = MockDataTask(request: request) { (sequence, error) in
             self.queue.async {
+                var isDataEmpty = true
+                if let data = sequence?.responseData {
+                    isDataEmpty = data.isEmpty
+                }
+                let isDataEmptyString = isDataEmpty ? "Data is empty" : "Data is not empty"
                 let message = String(format: "Data task completion - Request URL: %@, Data: %@, URLResponse: %@, Error: %@",
                                      request.url?.absoluteString ?? "No request URL",
-                                     sequence?.responseData?.isEmpty ?? "false",
+                                     isDataEmptyString,
                                      sequence?.response ?? "No response",
                                      error?.localizedDescription ?? "No error")
                 MockDuck.log(message, type: .error)
