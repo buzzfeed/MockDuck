@@ -34,6 +34,9 @@ final class MockDataTask: URLSessionDataTask {
         let mockRequestResponse = MockRequestResponse(request: request)
 
         if MockDuck.mockBundle.loadResponse(for: mockRequestResponse) {
+            let message = String(format: "Did load response for URL: %@", request.url?.absoluteString ?? "")
+            MockDuck.log(message, type: .error)
+
             // The request is found. Load the MockRequestResponse and call the completion/finish
             // with the updated data.
             completion(mockRequestResponse, nil)
@@ -55,6 +58,9 @@ final class MockDataTask: URLSessionDataTask {
             })
             fallbackTask?.resume()
         } else {
+            let message = String(format: "Did fail to load response for URL: %@", request.url?.absoluteString ?? "")
+            MockDuck.log(message, type: .error)
+
             // The request isn't found and we shouldn't fallback to the network. Return a
             // well-crafted error in the completion.
             let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet, userInfo: nil)

@@ -20,6 +20,12 @@ final class MockSession: URLSession {
     {
         let task = MockDataTask(request: request) { (sequence, error) in
             self.queue.async {
+                let message = String(format: "Data task completion - Request URL: %@, Data: %@, URLResponse: %@, Error: %@",
+                                     request.url?.absoluteString ?? "No request URL",
+                                     sequence?.responseData?.isEmpty ?? "false",
+                                     sequence?.response ?? "No response",
+                                     error?.localizedDescription ?? "No error")
+                MockDuck.log(message, type: .error)
                 completionHandler(sequence?.responseData, sequence?.response, error)
             }
         }
