@@ -81,7 +81,7 @@ pod 'MockDuck'
 [Carthage](https://github.com/Carthage/Carthage) is a simple, decentralized dependency manager for Cocoa. To integrate MockDuck into your project, add the following to your `Cartfile`:
 
 ```ruby
-github "BuzzFeed/MockDuck" "master"
+github "BuzzFeed/MockDuck" "main"
 ```
 
 ### Swift Package Manager
@@ -90,7 +90,7 @@ github "BuzzFeed/MockDuck" "master"
 
 ```swift
     dependencies: [
-        .package(url: "https://github.com/BuzzFeed/MockDuck", .branch("master"))
+        .package(url: "https://github.com/BuzzFeed/MockDuck", .branch("main"))
     ],
     targets: [
         .target(name: "your-target-name", dependencies: ["MockDuck"])
