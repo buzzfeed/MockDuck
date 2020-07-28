@@ -9,7 +9,7 @@
 import Foundation
 
 /// A basic class that holds onto a URLResponse and its associated data.
-public final class MockResponse {
+public final class MockResponse: CustomDebugStringConvertible {
 
     var response: URLResponse
     var responseData: Data?
@@ -81,6 +81,17 @@ public final class MockResponse {
     {
         let data = try JSONSerialization.data(withJSONObject: json, options: [])
         try self.init(for: request, data: data, statusCode: statusCode, headers: headers)
+    }
+    
+    public var debugDescription: String {
+        var result = ""
+        if let httpResponse = response as? HTTPURLResponse
+        {
+            result.append("\(httpResponse.statusCode) ")
+        }
+        result.append("\(response.url?.absoluteString ?? "")")
+        result.append(" (\(response.expectedContentLength) bytes)")
+        return result
     }
 }
 

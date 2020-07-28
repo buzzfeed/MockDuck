@@ -41,14 +41,19 @@ class MockBundleTests: XCTestCase {
         let responseData = Data([1, 2, 3, 4])
         let headerName = "X-BUZZFEED-TEST"
         let headerValue = "AMAZING"
+        let headerFields = [headerName: headerValue]
 
         let url: URL! = URL(string: "https://www.buzzfeed.com/mother-of-dragons")
         let request = URLRequest(url: url)
-        let response: HTTPURLResponse! = HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: nil, headerFields: [headerName: headerValue])
-        let mockResponse = MockResponse(response: response, responseData: responseData)
-        let requestResponse = MockRequestResponse(request: request, mockResponse: mockResponse)
+
         MockDuck.recordingURL = recordingURL
-        MockDuck.mockBundle.record(requestResponse: requestResponse)
+
+        _ = recordResponse(
+            url: url,
+            statusCode: statusCode,
+            responseData: responseData,
+            headerFields: headerFields)
+        
         let mockRequestResponse = MockRequestResponse(request: request)
         XCTAssertTrue(MockDuck.mockBundle.loadResponse(for: mockRequestResponse))
         XCTAssertNotNil(mockRequestResponse.response)
@@ -122,5 +127,176 @@ class MockBundleTests: XCTestCase {
         task.resume()
 
         waitForExpectations(timeout: 2.0, handler: nil)
+    }
+    
+    func testGetResponse() {
+        let statusCode = 530
+        let responseData = Data([1, 2, 3, 4])
+        let headerName = "X-BUZZFEED-TEST"
+        let headerValue = "AMAZING"
+        let headerFields = [headerName: headerValue]
+        let url: URL! = URL(string: "https://www.buzzfeed.com/mother-of-dragons")
+
+        MockDuck.loadingURL = loadingURL
+        MockDuck.recordingURL = recordingURL
+        
+        _ = recordResponse(
+            url: url,
+            statusCode: statusCode,
+            responseData: responseData,
+            headerFields: headerFields)
+        
+        let mockRequestResponse = MockDuck.mockBundle.getResponses(for: "www.buzzfeed.com").first!
+        
+        XCTAssertNotNil(mockRequestResponse.response)
+        XCTAssertEqual((mockRequestResponse.response as! HTTPURLResponse).statusCode, statusCode)
+        XCTAssertEqual(mockRequestResponse.responseData, responseData)
+        XCTAssertEqual(mockRequestResponse.response?.headers?[headerName], headerValue)
+    }
+    
+    func testGetResponseSidecar() {
+        let responseData = try! JSONSerialization.data(withJSONObject: ["test": "value"])
+        let headerName = "Content-Type"
+        let headerValue = "application/json"
+        let headerFields = [headerName: headerValue]
+        let url: URL! = URL(string: "https://www.buzzfeed.com/mother-of-dragons")
+
+        MockDuck.loadingURL = loadingURL
+        MockDuck.recordingURL = recordingURL
+        
+        _ = recordResponse(
+            url: url,
+            responseData: responseData,
+            headerFields: headerFields)
+
+        let mockRequestResponse = MockDuck.mockBundle.getResponses(for: "www.buzzfeed.com").first!
+        
+        XCTAssertNotNil(mockRequestResponse.response)
+        XCTAssertEqual(mockRequestResponse.responseData, responseData)
+        XCTAssertEqual(mockRequestResponse.response?.headers?[headerName], headerValue)
+    }
+    
+    func testGetResponseSimpleURL() {
+        let url: URL! = URL(string: "https://www.buzzfeed.com/mother-of-dragons")
+
+        MockDuck.loadingURL = loadingURL
+        MockDuck.recordingURL = recordingURL
+        
+        _ = recordResponse(url: url)
+        let mockRequestResponse = MockDuck.mockBundle.getResponses(for: "www.buzzfeed.com").first!
+        XCTAssertNotNil(mockRequestResponse.response)
+    }
+    
+    func testGetResponseMultipleURL() {
+        let url: URL! = URL(string: "https://www.buzzfeed.com/mother-of-dragons")
+
+        MockDuck.loadingURL = loadingURL
+        MockDuck.recordingURL = recordingURL
+        
+        _ = recordResponse(url: url)
+        let mockRequestResponse = MockDuck.mockBundle.getResponses(for: "www.buzzfeed.com").first!
+        XCTAssertNotNil(mockRequestResponse.response)
+    }
+    
+    func testGetResponseMissingFIle() {
+        let url: URL! = URL(string: "https://www.buzzfeed.com/mother-of-dragons")
+
+        MockDuck.loadingURL = loadingURL
+        MockDuck.recordingURL = recordingURL
+        
+        _ = recordResponse(url: url)
+        let mockRequestResponse = MockDuck.mockBundle.getResponses(for: "www.test.com").first
+        XCTAssertNil(mockRequestResponse)
+    }
+    
+    func testGetResponseFilterMultipleRequests() {
+        MockDuck.loadingURL = loadingURL
+        MockDuck.recordingURL = recordingURL
+        
+        let url1: URL! = URL(string: "https://www.buzzfeed.com/mother-of-dragons")
+        let url2: URL! = URL(string: "https://www.hodor.com/hodor")
+        _ = recordResponse(url: url1)
+        _ = recordResponse(url: url2)
+
+        let count = MockDuck.mockBundle.getResponses(for: "www.hodor.com").count
+        XCTAssertEqual(count, 1)
+    }
+
+    func testGetResponseMultipleRequests() {
+        MockDuck.loadingURL = loadingURL
+        MockDuck.recordingURL = recordingURL
+        
+        let url1: URL! = URL(string: "https://www.buzzfeed.com/mother-of-dragons")
+        let url2: URL! = URL(string: "https://www.buzzfeed.com/hodor")
+        _ = recordResponse(url: url1)
+        _ = recordResponse(url: url2)
+
+        let count = MockDuck.mockBundle.getResponses(for: "www.buzzfeed.com").count
+        XCTAssertEqual(count, 2)
+    }
+    
+    func testRelativeURL1() {
+        let url1: URL! = URL(string: "https://www.buzzfeed.com/mother/of/dragons")
+        let url2: URL! = URL(string: "https://www.buzzfeed.com/")
+
+        let result = url1.pathRelative(to: url2)
+        XCTAssertEqual("mother/of/dragons", result)
+    }
+    
+    func testRelativeURL2() {
+        let url1: URL! = URL(string: "https://www.buzzfeed.com/mother/of/dragons")
+        let url2: URL! = URL(string: "https://www.buzzfeed.com/mother/of")
+
+        let result = url1.pathRelative(to: url2)
+        XCTAssertEqual("dragons", result)
+    }
+    
+    func testRelativeURL3() {
+        let url1: URL! = URL(string: "https://www.buzzfeed.com")
+        let url2: URL! = URL(string: "https://www.buzzfeed.com/mother/of")
+
+        let result = url1.pathRelative(to: url2)
+        XCTAssertNil(result)
+    }
+
+    func testRelativeURL4() {
+        let url1: URL! = URL(string: "https://www.buzzfeed.com/mother/of/dragons")
+        let url2: URL! = URL(string: "https://www.hodor.com/")
+
+        let result = url1.pathRelative(to: url2)
+        XCTAssertNil(result)
+    }
+    
+    func testRelativeURL5() {
+        let url1: URL! = URL(string: "file:///a/b/c/d/e/f")
+        let url2: URL! = URL(string: "file://a/b/c/")
+
+        let result = url1.pathRelative(to: url2)
+        XCTAssertNil(result)
+    }
+
+    // MARK: - Utilities
+
+    func recordResponse(
+        url: URL,
+        statusCode: Int = 200,
+        responseData: Data? = nil,
+        headerFields: [String: String]? = nil) -> MockRequestResponse
+    {
+        let request = URLRequest(url: url)
+        
+        let response: HTTPURLResponse! = HTTPURLResponse(
+            url: url,
+            statusCode: statusCode,
+            httpVersion: nil,
+            headerFields: headerFields)
+        let mockResponse = MockResponse(
+            response: response,
+            responseData: responseData)
+        let requestResponse = MockRequestResponse(
+            request: request,
+            mockResponse: mockResponse)
+        MockDuck.mockBundle.record(requestResponse: requestResponse)
+        return requestResponse
     }
 }

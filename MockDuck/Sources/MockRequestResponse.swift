@@ -9,7 +9,7 @@
 import Foundation
 
 /// A basic container for holding a request, a response, and any associated data.
-final class MockRequestResponse: Codable {
+public final class MockRequestResponse: Codable, CustomDebugStringConvertible {
 
     enum MockFileTarget {
         case request
@@ -19,7 +19,7 @@ final class MockRequestResponse: Codable {
 
     // MARK: - Properties
 
-    var request: URLRequest {
+    public var request: URLRequest {
         get {
             return requestWrapper.request
         }
@@ -28,11 +28,11 @@ final class MockRequestResponse: Codable {
         }
     }
 
-    var response: URLResponse? {
+    public var response: URLResponse? {
         return responseWrapper?.response
     }
 
-    var responseData: Data? {
+    public var responseData: Data? {
         get {
             return responseWrapper?.responseData
         }
@@ -107,6 +107,10 @@ final class MockRequestResponse: Codable {
             hashData.append(body)
         }
 
+        if let bodyData = normalizedRequest.httpBodyStreamData {
+            hashData.append(bodyData)
+        }
+
         if !hashData.isEmpty {
             return String(CryptoUtils.md5(hashData).prefix(8))
         } else {
@@ -136,9 +140,32 @@ final class MockRequestResponse: Codable {
         case responseWrapper = "response"
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         requestWrapper = try container.decode(MockRequest.self, forKey: .requestWrapper)
         responseWrapper = try container.decodeIfPresent(MockResponse.self, forKey: .responseWrapper)
+    }
+    
+    // MARK: Debug
+    
+    public var debugDescription: String {
+        var result = "\n"
+        
+        if let request = fileName(for: .request) {
+            result.append("Request: \(request)\n")
+            result.append("\t\(requestWrapper)\n")
+        }
+        if let requestBody = fileName(for: .requestBody) {
+            result.append("Request Body: \(requestBody)\n")
+        }
+        if let responseData = fileName(for: .responseData) {
+            result.append("Response Data: \(responseData)\n")
+                
+            if let response = responseWrapper {
+                result.append("\t\(response)\n")
+            }
+        }
+
+        return result
     }
 }

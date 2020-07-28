@@ -29,58 +29,107 @@ final class MockBundle {
     /// - Returns: The MockRequestResponse, if it can be loaded
     func loadResponse(for requestResponse: MockRequestResponse) -> Bool {
         guard let fileName = requestResponse.fileName(for: .request) else { return false }
-
-        var targetURL: URL?
-        var targetLoadingURL: URL?
         let request = requestResponse.request
 
+        var loadedPath: String?
+        var loadedResponse: MockResponse?
         if let response = checkRequestHandlers(for: request) {
-            requestResponse.responseWrapper = response
-            return true
-        } else if
-            let inputURL = loadingURL?.appendingPathComponent(fileName),
-            FileManager.default.fileExists(atPath: inputURL.path)
-        {
-            os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputURL.path)
-            targetURL = inputURL
-            targetLoadingURL = loadingURL
-        } else if
-            let inputURL = recordingURL?.appendingPathComponent(fileName),
-            FileManager.default.fileExists(atPath: inputURL.path)
-        {
-            os_log("Loading request %@ from: %@", log: MockDuck.log, type: .debug, "\(request)", inputURL.path)
-            targetURL = inputURL
-            targetLoadingURL = recordingURL
+            loadedResponse = response
+        } else if let response = loadResponseFile(relativePath: fileName, baseURL: loadingURL) {
+            loadedPath = loadingURL?.path ?? "" + fileName
+            loadedResponse = response.responseWrapper
+        } else if let response = loadResponseFile(relativePath: fileName, baseURL: recordingURL) {
+            loadedPath = recordingURL?.path ?? "" + fileName
+            loadedResponse = response.responseWrapper
         } else {
             os_log("Request %@ not found on disk. Expected file name: %@", log: MockDuck.log, type: .debug, "\(request)", fileName)
         }
+        
+        if let response = loadedResponse {
+            requestResponse.responseWrapper = response
+            if let path = loadedPath {
+                os_log("Loading request %@ from: %@",
+                log: MockDuck.log,
+                type: .debug,
+                "\(request)",
+                path)
+            }
+            return true
+        }
+        return false
+    }
+    
+    /// Takes a URL and attempts to parse the file at that location into a MockRequestResponse
+    /// If the file doesn't exist, or isn't in the expected MockDuck format, nil is returned
+    ///
+    /// - Parameter targetURL: URL that should be loaded from file
+    /// - Returns: MockRequestResponse if the request exists at that URL
+    func loadResponseFile(relativePath: String, baseURL: URL?) -> MockRequestResponse? {
+        guard let baseURL = baseURL else { return nil }
+        let targetURL = baseURL.appendingPathComponent(relativePath)
+        guard FileManager.default.fileExists(atPath: targetURL.path) else { return nil}
+        
+        let decoder = JSONDecoder()
+        
+        do {
+            let data = try Data(contentsOf: targetURL)
+            
+            let response = try decoder.decode(MockRequestResponse.self, from: data)
+            
+            // Load the response data if the format is supported.
+            // This should be the same filename with a different extension.
+            if let dataFileName = response.fileName(for: .responseData) {
+                let dataURL = baseURL.appendingPathComponent(dataFileName)
+                response.responseData = try? Data(contentsOf: dataURL)
+            }
+            
+            return response
+        } catch {
+            os_log("Error decoding JSON: %@", log: MockDuck.log, type: .error, "\(error)")
+        }
+        return nil
+    }
+    
+    /// Takes a passed in hostname and returns all the recorded mocks for that URL.
+    /// If an empty string is passed in, all recordings will be returned.
+    ///
+    /// - Parameter hostname: String representing the hostname to load requests from.
+    /// - Returns: An array of MockRequestResponse for each request under that domain
+    func getResponses(for hostname: String) -> [MockRequestResponse] {
+        guard let recordingURL = recordingURL else { return [] }
+        
+        let baseURL = recordingURL.resolvingSymlinksInPath()
+        var responses = [MockRequestResponse]()
+        let targetURL = baseURL.appendingPathComponent(hostname)
+        
+        let results = FileManager.default.enumerator(
+            at: targetURL,
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [])
+        
+        if let results = results {
+            for case let item as URL in results {
+                var isDir = ObjCBool(false)
+                let itemURL = item.resolvingSymlinksInPath()
 
-        if
-            let targetURL = targetURL,
-            let targetLoadingURL = targetLoadingURL
-        {
-            let decoder = JSONDecoder()
-
-            do {
-                let data = try Data(contentsOf: targetURL)
-
-                let loaded = try decoder.decode(MockRequestResponse.self, from: data)
-                requestResponse.responseWrapper = loaded.responseWrapper
-
-                // Load the response data if the format is supported.
-                // This should be the same filename with a different extension.
-                if let dataFileName = requestResponse.fileName(for: .responseData) {
-                    let dataURL = targetLoadingURL.appendingPathComponent(dataFileName)
-                    requestResponse.responseData = try Data(contentsOf: dataURL)
+                /// Check if the item:
+                /// 1) isn't a directory
+                /// 2) doesn't end in '-response' (a sidecar file)
+                /// If so, load it using loadResponseFile so any associated
+                ///  '-response' file is also loaded with the repsonse.
+                if
+                    FileManager.default.fileExists(atPath: itemURL.path, isDirectory: &isDir),
+                    !isDir.boolValue,
+                    !itemURL.lastPathComponent.contains("-response"),
+                    let relativePath = itemURL.pathRelative(to: baseURL),
+                    let response = loadResponseFile(relativePath: relativePath, baseURL: recordingURL)
+                {
+                    responses.append(response)
                 }
-
-                return true
-            } catch {
-                os_log("Error decoding JSON: %@", log: MockDuck.log, type: .error, "\(error)")
             }
         }
-
-        return false
+        
+        return responses
     }
 
     /// If recording is enabled, this method saves the request to the filesystem. If the request
@@ -167,5 +216,26 @@ final class MockBundle {
                                             withIntermediateDirectories: true,
                                             attributes: nil)
         }
+    }
+}
+
+
+extension URL {
+    func pathRelative(to url: URL) -> String? {
+        guard
+            host == url.host,
+            scheme == url.scheme
+        else { return nil }
+
+        let components = self.standardized.pathComponents
+        let baseComponents = url.standardized.pathComponents
+        
+        if components.count < baseComponents.count { return nil }
+        for (index, baseComponent) in baseComponents.enumerated() {
+            let component = components[index]
+            if component != baseComponent { return nil }
+        }
+
+        return components[baseComponents.count..<components.count].joined(separator: "/")
     }
 }
