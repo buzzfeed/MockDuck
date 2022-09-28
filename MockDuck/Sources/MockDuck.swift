@@ -10,7 +10,7 @@ import Foundation
 import os
 
 /// A delegate protocol that can be used to modify how MockDuck functions.
-public protocol MockDuckDelegate: class {
+public protocol MockDuckDelegate: AnyObject {
 
     /// A hook that allows one to normalize a request before it is turned into a hash that uniquely
     /// identifies it on the filesystem. By default, the entire request URL and the request body
